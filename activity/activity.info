@@ -1,0 +1,6 @@
+[Activity]
+name = Xo IRC
+activity_version = 1
+service_name = org.laptop.XoIRC
+icon = activity-test
+class = xoircactivity.XoIRCActivity
