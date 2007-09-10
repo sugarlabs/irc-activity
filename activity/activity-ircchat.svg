@@ -1,0 +1,7 @@
+<?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd' [
+	<!ENTITY stroke_color "#010101">
+	<!ENTITY fill_color "#FFFFFF">
+]><svg enable-background="new 0 0 55 55" height="55px" version="1.1" viewBox="0 0 55 55" width="55px" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px"><g display="block" id="activity-irc_x5F_chat">
+	<path d="   M5.646,9.404v31.86h8.943c1.602,1.892-3.98,6.839-3.98,6.839c7.275,0.873,13.643-6.257,13.643-6.257h24.852V9.404H5.646z" fill="&fill_color;" id="rect3365" stroke="&stroke_color;" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5"/>
+	<path d="M19.207,19.965h-2.883l-0.832,3.309h2.902   L19.207,19.965 M17.721,14.329l-1.029,4.111h2.893l1.039-4.111h1.586l-1.021,4.111h3.091v1.525h-3.478l-0.812,3.309h3.149v1.516   h-3.536l-1.03,4.101h-1.585l1.021-4.101h-2.902l-1.021,4.101h-1.595l1.03-4.101h-3.12v-1.516h3.486l0.833-3.309h-3.19v-1.525h3.576   l1.011-4.111H17.721" fill="&stroke_color;" id="text4571" stroke="&stroke_color;" stroke-width="0.4769"/>
+</g></svg>
