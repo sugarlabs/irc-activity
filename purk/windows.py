@@ -4,7 +4,6 @@ import irc
 from conf import conf
 import widgets
 
-#manager = widgets.UrkUITabs()
 def append(window, manager):
     print "** DEBUG :: Add Window: ", window
     manager.add(window)

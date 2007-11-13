@@ -3,4 +3,4 @@ name = Xo IRC
 activity_version = 1
 service_name = org.laptop.XoIRC
 icon = activity-ircchat
-class = xoircactivity.XoIRCActivity
+exec = sugar-activity xoircactivity.XoIRCActivity -s
