@@ -769,9 +769,8 @@ class UrkUITabs(gtk.VBox):
 
         self.tabs.set_scrollable(True)
         self.tabs.set_property("can-focus", False)
-
         self.pack_end(self.tabs)
-
+    
     def __iter__(self):
         return iter(self.tabs.get_children())
 

@@ -26,12 +26,7 @@ def onExit(e):
 
 def setupJoin(e):
     if e.source == e.network.me:
-        window = windows.get(windows.StatusWindow, e.network, 'status', core)
-        
-        if window and not conf.get('status'):
-            window.mutate(windows.ChannelWindow, e.network, e.target)
-        else:
-            window = windows.new(windows.ChannelWindow, e.network, e.target, core)
+        window = windows.new(windows.ChannelWindow, e.network, e.target, core)
         
         if e.requested:
             window.activate()

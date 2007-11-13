@@ -5,7 +5,7 @@ import events
 import windows
 
 urkpath = os.path.abspath(os.path.dirname(__file__))
-print urkpath
+
 if os.path.abspath(os.curdir) != os.path.join(urkpath):
     sys.path[0] = os.path.join(urkpath)    
 
@@ -97,6 +97,7 @@ class Client(object):
         self.widget.show_all()
 
     def add_channel(self, channel):
+        print "Add channel: ", channel
         self.core.channels.append(channel)
 
     def clear_channels(self):

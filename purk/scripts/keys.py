@@ -49,7 +49,7 @@ def onKeyPress(e):
 
     # tabbed browsing
     elif e.key == '^t':
-        windows.new(windows.StatusWindow, irc.Network(), 'status').activate()
+        windows.new(windows.StatusWindow, irc.Network(core), 'status',core).activate()
 
     elif e.key == '^w':
         windows.manager.get_active().close()

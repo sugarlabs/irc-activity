@@ -5,16 +5,17 @@ from conf import conf
 import widgets
 
 #manager = widgets.UrkUITabs()
-
 def append(window, manager):
+    print "** DEBUG :: Add Window: ", window
     manager.add(window)
 
 def remove(window, manager):
+    print "** DEBUG :: Remove Window: ", window
     manager.remove(window)
-    
+
     # i don't want to have to call this
     window.destroy()
-    
+
 def new(wclass, network, id, core):
     if network is None:
         network = irc.dummy_network
@@ -25,7 +26,7 @@ def new(wclass, network, id, core):
         append(w, core.manager)
 
     return w
-    
+
 def get(windowclass, network, id, core):
     if network:
         id = network.norm_case(id)
@@ -33,7 +34,7 @@ def get(windowclass, network, id, core):
     for w in core.manager:
         if (type(w), w.network, w.id) == (windowclass, network, id):
             return w
-  
+
 def get_with(manager, wclass=None, network=None, id=None):
     if network and id:
         id = network.norm_case(id)
@@ -47,31 +48,18 @@ def get_with(manager, wclass=None, network=None, id=None):
             yield w
             
 def get_default(network, manager):
-
     window = manager.get_active()
+
     if window.network == network:
         return window
 
     # There can be only one...
-    for window in get_with(network=network):
+    for window in get_with(manager, None, network):
         return window
 
 class Window(gtk.VBox):
     need_vbox_init = True
-    
-    def mutate(self, newclass, network, id):
-        isactive = self == manager.get_active()
-        self.hide()
-        
-        for child in self.get_children():
-            self.remove(child)
 
-        self.__class__ = newclass
-        self.__init__(network, id)
-        self.update()
-        if isactive:
-            self.activate()
-        
     def transfer_text(self, _widget, event):
         if event.string and not self.input.is_focus():
             self.input.grab_focus()
@@ -261,6 +249,7 @@ def drop_nicklist(paned, event):
 class ChannelWindow(Window):
     def __init__(self, network, id, core):
         Window.__init__(self, network, id, core)
+        print "** DEBUG :: NEW Channel Window: ", network, ", ", id, ", ", core
 
         self.nicklist = widgets.Nicklist(self, core)
         self.nick_label = widgets.NickEditor(self, core)
@@ -294,5 +283,4 @@ class ChannelWindow(Window):
         pane.connect("button-release-event", drop_nicklist)
         
         self.pack_end(pane)
-
         self.show_all()

@@ -158,7 +158,7 @@ class Network(object):
             self.source = source = ui.Source()
             
             self.buffer = (self.buffer + result).split("\r\n")
-            
+
             for line in self.buffer[:-1]:
                 self.got_msg(line)
             
@@ -178,13 +178,13 @@ class Network(object):
         
     def got_msg(self, msg):
         pmsg = parse_irc(msg, self.server)
-    
+
         e_data = self.events.data(
                     raw=msg,
                     msg=pmsg,
                     text=pmsg[-1],
                     network=self,
-                    window=windows.get_default(self, self.manager)
+                    window=windows.get_default(self, self.core.manager)
                     )
         
         if "!" in pmsg[0]:
