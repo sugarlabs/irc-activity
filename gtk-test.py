@@ -22,6 +22,8 @@ import purk
 class XoIRC(gtk.Window):
     def __init__(self):
         gtk.Window.__init__(self)
+        self.connect('destroy', gtk.main_quit)
+
         self.set_title('XoIRC')
         self.set_size_request(800, 450)
 
