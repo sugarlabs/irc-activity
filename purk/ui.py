@@ -36,20 +36,6 @@ PRIORITY_DEFAULT_IDLE = gobject.PRIORITY_DEFAULT_IDLE
 PRIORITY_LOW = gobject.PRIORITY_LOW
 
 
-if os.access(path('profile'),os.F_OK) or os.path.expanduser("~") == "~":
-    userpath = path('profile')
-    if not os.access(userpath,os.F_OK):
-        os.mkdir(userpath)
-    if not os.access(os.path.join(userpath,'scripts'),os.F_OK):
-        os.mkdir(os.path.join(userpath,'scripts'))
-else:
-    userpath = os.path.join(os.path.expanduser("~"), ".urk")
-    if not os.access(userpath,os.F_OK):
-        os.mkdir(userpath, 0700)
-    if not os.access(os.path.join(userpath,'scripts'),os.F_OK):
-        os.mkdir(os.path.join(userpath,'scripts'), 0700)
-
-
 def set_clipboard(text):
     gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD).set_text(text)
     gtk.clipboard_get(gtk.gdk.SELECTION_PRIMARY).set_text(text)

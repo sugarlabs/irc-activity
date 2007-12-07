@@ -7,22 +7,6 @@ def path(filename=""):
     else:
         return urkpath
 
-if os.access(path('profile'),os.F_OK) or os.path.expanduser("~") == "~":
-    userpath = path('profile')
-    if not os.access(userpath,os.F_OK):
-        os.mkdir(userpath)
-    if not os.access(os.path.join(userpath,'scripts'),os.F_OK):
-        os.mkdir(os.path.join(userpath,'scripts'))
-else:
-    userpath = os.path.join(os.path.expanduser("~"), ".urk")
-    if not os.access(userpath,os.F_OK):
-        os.mkdir(userpath, 0700)
-    if not os.access(os.path.join(userpath,'scripts'),os.F_OK):
-        os.mkdir(os.path.join(userpath,'scripts'), 0700)
-
-CONF_FILE = os.path.join(userpath,'urk.conf')
-
-
 def pprint(obj, depth=-2):
     depth += 2
     
@@ -56,7 +40,7 @@ def pprint(obj, depth=-2):
         
     else:
         string.append('%s,\n' % (repr(obj),))
-        
+
     if depth:
         return string
     else:
@@ -74,13 +58,7 @@ def save(*args):
 
 #events.register('Exit', 'post', save)
 
-try:
-    conf = eval(file(CONF_FILE, "U").read().strip())
-except IOError, e:
-    if e.args[0] == 2:
-        conf = {}
-    else:
-        raise
-    
+conf = {}
+
 if __name__ == '__main__':
     print pprint(conf)
