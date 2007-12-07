@@ -33,7 +33,7 @@ class XoIRCActivity(activity.Activity):
         self.set_title(_('Xo IRC Activity'))
 
         client = purk.Client()
-        client.add_channel('#olpc-help')
+        client.add_channel('#olpc-support')
         client.join_server('irc.freenode.net')
         client.show()
         widget = client.get_widget()
