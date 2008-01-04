@@ -47,14 +47,7 @@ def pprint(obj, depth=-2):
         return ''.join(string)[:-2]
 
 def save(*args):
-    new_file = not os.access(CONF_FILE,os.F_OK)
-    fd = file(CONF_FILE, "wb")
-    try:
-        if new_file:
-            os.chmod(CONF_FILE,0600)
-        fd.write(pprint(conf))
-    finally:
-        fd.close()
+    pass
 
 #events.register('Exit', 'post', save)
 
