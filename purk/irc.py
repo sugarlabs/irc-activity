@@ -43,8 +43,32 @@ def default_nicks():
     try:
         nicks = [conf.get('nick')] + conf.get('altnicks',[])
         if not nicks[0]:
-            import getpass
-            nicks = [getpass.getuser()]
+            # We're going to generate a nick based on the user's nick name 
+            # and their public key. 
+            import sugar.profile 
+            import hashlib 
+
+            user_name = sugar.profile.get_nick_name() 
+            pubkey = sugar.profile.get_pubkey() 
+            m = hashlib.sha1() 
+            m.update(pubkey) 
+            hexhash = m.hexdigest()
+
+            # Okay.  Get all of the alphabetic bits of the username: 
+            user_name_letters = "".join([x for x in user_name if x.isalpha()]) 
+
+            # If that came up with nothing, make it 'XO'.  Also, shorten it 
+            # if it's more than 11 characters (as we need 5 for - and the 
+            # hash). 
+            if len(user_name_letters) == 0: 
+                user_name_letters = "XO" 
+            if len(user_name_letters) > 11: 
+                user_name_letters = user_name_letters[0:11]
+
+            # Finally, generate a nick by using those letters plus the first 
+            # four hash bits of the user's public key. 
+            user_nick = user_name_letters + "-" + hexhash[0:4] 
+            nicks = [user_nick]
     except:
         nicks = ["mrurk"]
     return nicks
