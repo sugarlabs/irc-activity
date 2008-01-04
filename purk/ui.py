@@ -89,3 +89,5 @@ set_style = widgets.set_style
 def we_get_signal(*what):
     gobject.idle_add(windows.manager.exit)
 
+def open_file(path):
+    pass
