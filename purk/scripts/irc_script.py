@@ -337,6 +337,7 @@ def onCommandJoin(e):
     else:
         raise core.events.CommandError("You must supply a channel.")
 
+onCommandJ = onCommandJoin
 
 def onCommandPart(e):
     if e.args:
