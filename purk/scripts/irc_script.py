@@ -251,6 +251,15 @@ def onCommandQuery(e):
         if message: #this is false if you do "/query nickname " 
             e.network.msg(e.args[0], ' '.join(e.args[1:]))
 
+
+def onCommandAction(e): 
+    if isinstance(e.window, windows.ChannelWindow) or isinstance(e.window, windows.QueryWindow): 
+        e.network.msg(e.window.id, '\x01ACTION ' + ' '.join(e.args) + '\x01') 
+    else: 
+        raise core.events.CommandError("There's no one here to speak to.") 
+
+onCommandMe = onCommandAction
+
 def setupJoin(e):
     if e.source == e.network.me:
         chan = e.network.norm_case(e.channel)
@@ -327,6 +336,7 @@ def onCommandJoin(e):
         e.window.network.join(e.window.id, requested = 'n' not in e.switches)
     else:
         raise core.events.CommandError("You must supply a channel.")
+
 
 def onCommandPart(e):
     if e.args:
