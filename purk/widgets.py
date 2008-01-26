@@ -15,11 +15,13 @@ import servers
 HILIT = 'h'
 TEXT ='t'
 EVENT = 'e'
+CURRENT = 'c'
 
 ACTIVITY_MARKUP = {
     HILIT: "<span style='italic' foreground='#00F'>%s</span>",
     TEXT: "<span foreground='#ca0000'>%s</span>",
     EVENT: "<span foreground='#363'>%s</span>",
+    CURRENT: "<span foreground='#000000'>%s</span>",
     }
 
 # This holds all tags for all windows ever
@@ -643,7 +645,7 @@ class WindowLabel(gtk.EventBox):
         for escapes in (('&','&amp;'), ('<','&lt;'), ('>','&gt;')):
             title = title.replace(*escapes)
 
-        for a_type in (HILIT, TEXT, EVENT):
+        for a_type in (HILIT, TEXT, EVENT, CURRENT):
             if a_type in self.win.activity:
                 title = ACTIVITY_MARKUP[a_type] % title
                 break
@@ -651,6 +653,10 @@ class WindowLabel(gtk.EventBox):
         self.label.set_markup(title)
 
     def tab_popup(self, event):
+        # When a tab is selected, clear the activity and set CURRENT
+        if event.button == 1: # left click
+            self.win.activity = None
+            self.win.activity = CURRENT
         if event.button == 3: # right click
             c_data = self.events.data(window=self.win, menu=[])
             self.events.trigger("WindowMenu", c_data)
