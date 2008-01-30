@@ -165,21 +165,23 @@ def onText(e):
     color = getsourcecolor(e)
     to_write = prefix(e)
     
-    if len(e.text) > 8 and e.text[0:7] == "\x01ACTION": 
-        # This is an action. 
-        to_write += "%s %s" % (format_source(e), e.text[7:-1]) 
-    elif e.network.me == e.target:    # this is a pm 
+    if len(e.text) > 8 and e.text[0:7] == "\x01ACTION":
+
+       # This is an action.
+       to_write += "%s %s" % (format_source(e), e.text[7:-1])
+    elif e.network.me == e.target:    # this is a pm
         if e.window.id == e.network.norm_case(e.source):
             to_write += "\x02<\x0F%s\x0F\x02>\x0F " % (format_source(e))
         else:
             to_write += "\x02*\x0F%s\x0F\x02*\x0F " % (format_source(e))
+        to_write += e.text
     else:
         if e.window.id == e.network.norm_case(e.target):
             to_write += "\x02<\x0F%s\x0F\x02>\x0F " % (format_source(e))
         else:
             to_write += "\x02<\x0F%s:%s\x0F\x02>\x0F " % (format_source(e), e.target)
-    to_write += e.text
-
+        to_write += e.text
+    
     if e.Highlight:
         e.window.write(to_write, widgets.HILIT)
     else:
@@ -188,10 +190,12 @@ def onText(e):
 def onOwnText(e):
     color = getsourcecolor(e)
     to_write = prefix(e)
-    if len(e.text) > 8 and e.text[0:7] == "\x01ACTION": 
-        # This is an action. 
-        to_write += "%s%s" % (format_source(e), e.text[7:-1]) 
-    elif e.window.id == e.network.norm_case(e.target): 
+
+    if len(e.text) > 8 and e.text[0:7] == "\x01ACTION":
+
+       # This is an action.
+       to_write += "%s%s" % (format_source(e), e.text[7:-1])
+    elif e.window.id == e.network.norm_case(e.target):
         to_write += "\x02<\x0F%s\x0F\x02>\x0F %s" % (format_source(e), e.text)
     else:
         to_write += "%s->\x0F \x02*\x0F%s\x0F\x02*\x0F %s" % (color, e.target, e.text)

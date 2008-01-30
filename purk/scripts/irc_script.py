@@ -251,12 +251,11 @@ def onCommandQuery(e):
         if message: #this is false if you do "/query nickname " 
             e.network.msg(e.args[0], ' '.join(e.args[1:]))
 
-
-def onCommandAction(e): 
-    if isinstance(e.window, windows.ChannelWindow) or isinstance(e.window, windows.QueryWindow): 
-        e.network.msg(e.window.id, '\x01ACTION ' + ' '.join(e.args) + '\x01') 
-    else: 
-        raise core.events.CommandError("There's no one here to speak to.") 
+def onCommandAction(e):
+    if isinstance(e.window, windows.ChannelWindow) or isinstance(e.window, windows.QueryWindow):
+        e.network.msg(e.window.id, '\x01ACTION ' + ' '.join(e.args) + '\x01')
+    else:
+        raise core.events.CommandError("There's no one here to speak to.")
 
 onCommandMe = onCommandAction
 
