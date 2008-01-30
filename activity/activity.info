@@ -1,5 +1,5 @@
 [Activity]
-name = Xo IRC
+name = XoIRC
 activity_version = 4
 service_name = org.laptop.XoIRC
 icon = activity-ircchat
