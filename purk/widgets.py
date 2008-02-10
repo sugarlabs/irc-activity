@@ -653,10 +653,6 @@ class WindowLabel(gtk.EventBox):
         self.label.set_markup(title)
 
     def tab_popup(self, event):
-        # When a tab is selected, clear the activity and set CURRENT
-        if event.button == 1: # left click
-            self.win.activity = None
-            self.win.activity = CURRENT
         if event.button == 3: # right click
             c_data = self.events.data(window=self.win, menu=[])
             self.events.trigger("WindowMenu", c_data)
@@ -767,7 +763,7 @@ class UrkUITabs(gtk.VBox):
         gtk.gdk.threads_init()
         self.core = core
         self.events = core.events
-        self.tabs = gtk.Notebook()
+        self.tabs = Notebook()
         self.tabs.set_property(
             "tab-pos", 
             conf.get("ui-gtk/tab-pos", gtk.POS_BOTTOM)
@@ -806,3 +802,12 @@ class UrkUITabs(gtk.VBox):
 
     def update(self, window):
         self.tabs.get_tab_label(window).update()
+
+class Notebook(gtk.Notebook):
+    def __init__(self):
+        gtk.Notebook.__init__(self)
+        self.connect("switch-page", Notebook.switch_page, self)
+
+    def switch_page(self, page, pnum, data):
+        self.get_nth_page(pnum).activity = None
+        self.get_nth_page(pnum).activity = CURRENT
