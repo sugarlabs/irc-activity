@@ -65,7 +65,9 @@ class Window(gtk.VBox):
             self.input.set_position(-1)
             self.input.event(event)
         
-    def write(self, text, activity_type=widgets.EVENT, line_ending='\n', fg=None):
+    def write(self, text, activity_type=None, line_ending='\n', fg=None):
+        if activity_type is None:
+            activity_type = widgets.EVENT
         if self.manager.get_active() != self:
             self.activity = activity_type
         self.output.write(text, line_ending, fg)
