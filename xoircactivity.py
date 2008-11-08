@@ -32,6 +32,12 @@ class XoIRCActivity(activity.Activity):
         logging.debug('Starting the XoIRC Activity')
         self.set_title(_('Xo IRC Activity'))
 
+        self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
+        self.connect('visibility-notify-event',
+                     self.__visibility_notify_event_cb)
+
+        self.is_visible = False
+
         client = purk.Client()
         client.add_channel('#olpc-help')
         client.join_server('irc.freenode.net')
@@ -45,3 +51,7 @@ class XoIRCActivity(activity.Activity):
         toolbox = activity.ActivityToolbox(self)
         self.set_toolbox(toolbox)
         self.show_all()
+
+    def __visibility_notify_event_cb(self, window, event):
+        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
+
