@@ -1,6 +1,6 @@
 [Activity]
-name = XoIRC
-activity_version = 4
-service_name = org.laptop.XoIRC
+name = IRC
+activity_version = 5
+service_name = org.sugarlabs.IRC
 icon = activity-ircchat
-exec = sugar-activity xoircactivity.XoIRCActivity 
+exec = sugar-activity ircactivity.IRCActivity 
