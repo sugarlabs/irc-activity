@@ -39,7 +39,7 @@ class XoIRCActivity(activity.Activity):
         self.is_visible = False
 
         client = purk.Client()
-        client.add_channel('#olpc-help')
+        client.add_channel('#sugar')
         client.join_server('irc.freenode.net')
         client.show()
         widget = client.get_widget()
