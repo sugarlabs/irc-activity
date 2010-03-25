@@ -26,7 +26,7 @@ from sugar.activity import activity
 from sugar import env
 import purk
 
-class XoIRCActivity(activity.Activity):
+class IRCActivity(activity.Activity):
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
         logging.debug('Starting the XoIRC Activity')
