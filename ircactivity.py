@@ -55,3 +55,16 @@ class IRCActivity(activity.Activity):
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
 
+    def read_file(self, file_path):
+        try:
+            self.client.run_command('/nick %s' % self.metadata['nickname'])
+        except:
+            print "error when reading"
+			
+    def write_file(self, file_path):
+        try:
+            self.metadata['nickname'] = self.client.core.window.network.me
+            self.metadata['channels'] = self.client.core.channels
+            self.metadata['server'] = self.client.core.window.network.server
+        except:
+            print "error when writing"
