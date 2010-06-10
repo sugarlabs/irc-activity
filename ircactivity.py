@@ -57,14 +57,34 @@ class IRCActivity(activity.Activity):
 
     def read_file(self, file_path):
         try:
-            self.client.run_command('/nick %s' % self.metadata['nickname'])
+            data_file = open(file_path, 'r')
+            data = data_file.readlines()
+            
+            # looking for nickname
+            for part in data:
+                if 'nck:' in part:
+                    self.client.run_command('/nick %s' % part[4:])
+                
+                if 'ch:' in part:
+                    self.client.add_channel(part[3:])
+                
+                if 'svr:' in part:
+                    self.client.join_server(part[4:])
         except:
-            print "error when reading"
+            logging.debug("error when reading")
 			
     def write_file(self, file_path):
+        logging.debug("executing write_file")
         try:
-            self.metadata['nickname'] = self.client.core.window.network.me
-            self.metadata['channels'] = self.client.core.channels
-            self.metadata['server'] = self.client.core.window.network.server
+            saved_data = open(file_path, 'w')
+            saved_data.write("nck:%s\n" % self.client.core.window.network.me)
+            
+            for channel in self.client.core.channels:
+                saved_data.write("ch:%s\n" % channel)
+            
+            saved_data.write("svr:%s\n" % self.client.core.window.network.server)
+            
+            saved_data.close()
+            
         except:
-            print "error when writing"
+            logging.debug("error when writing")
