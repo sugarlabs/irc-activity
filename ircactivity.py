@@ -27,42 +27,12 @@ from sugar import env
 import purk
 
 class IRCActivity(activity.Activity):
-
-    def read_file(self, file_path):
-        print "DEBUG: executing read_file"
-        data_file = open(file_path, 'r')
-        data = data_file.readlines()
-        self.client.run_command('nick ' + self.metadata['nickname'])
-        # looking for nickname
-        for part in data:
-            print part
-            if 'nck:' in part:
-                self.client.run_command('nick %s' % part[4:])
-               
-            if 'ch:' in part:
-                self.client.add_channel(part[3:])
-                
-            if 'svr:' in part:
-                self.client.join_server(part[4:])
-        
-        data_file.close()
 			
     def write_file(self, file_path):
         print "DEBUG: executing write_file"
-        saved_data = open(file_path, 'w')
-        saved_data.write("nck:%s\n" % self.client.core.window.network.me)
-        print self.client.core.window.network.me
         self.metadata['nickname'] = self.client.core.window.network.me
-        
-        for channel in self.client.core.channels:
-            saved_data.write("ch:%s\n" % channel)
-            print channel
-            
-        saved_data.write("svr:%s\n" % self.client.core.window.network.server)
-        print self.client.core.window.network.server
-            
-        saved_data.close()
-
+        self.metadata['channels'] = self.client.core.channels
+        self.metadata['server'] = self.client.core.window.network.server
 
 
     def __init__(self, handle):
@@ -95,6 +65,20 @@ class IRCActivity(activity.Activity):
         print "DEBUG: running nickname command"
         
         self.client.run_command("/nick hellobv")
+        
+        print "DEBUG: adding channels"
+        try:
+            for channel in self.metadata['channels']:
+                self.client.add_channel(channel)
+        except:
+            print "ERROR: cannot add channels"
+        
+        print "DEBUG: setting server"
+        
+        try:
+            self.client.run_command("/server " + self.metadata['server'])
+        except:
+            print "ERROR: cannot set server"
 
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
