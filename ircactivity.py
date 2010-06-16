@@ -30,9 +30,20 @@ class IRCActivity(activity.Activity):
 			
     def write_file(self, file_path):
         print "DEBUG: executing write_file"
+        
+        print "=== nickname ==="
         self.metadata['nickname'] = self.client.core.window.network.me
+        print "=== ======== ==="
+        
+        print "=== channels ==="
         self.metadata['channels'] = self.client.core.channels
+        print "=== ======== ==="
+        
+        print "=== server ==="
         self.metadata['server'] = self.client.core.window.network.server
+        print "=== ====== ==="
+        
+        print "DEBUG: done with write_file"
 
 
     def __init__(self, handle):
