@@ -27,8 +27,47 @@ from sugar import env
 import purk
 
 class IRCActivity(activity.Activity):
+
+    def read_file(self, file_path):
+        print "DEBUG: executing read_file"
+        data_file = open(file_path, 'r')
+        data = data_file.readlines()
+        self.client.run_command('nick ' + self.metadata['nickname'])
+        # looking for nickname
+        for part in data:
+            print part
+            if 'nck:' in part:
+                self.client.run_command('nick %s' % part[4:])
+               
+            if 'ch:' in part:
+                self.client.add_channel(part[3:])
+                
+            if 'svr:' in part:
+                self.client.join_server(part[4:])
+        
+        data_file.close()
+			
+    def write_file(self, file_path):
+        print "DEBUG: executing write_file"
+        saved_data = open(file_path, 'w')
+        saved_data.write("nck:%s\n" % self.client.core.window.network.me)
+        print self.client.core.window.network.me
+        self.metadata['nickname'] = self.client.core.window.network.me
+        
+        for channel in self.client.core.channels:
+            saved_data.write("ch:%s\n" % channel)
+            print channel
+            
+        saved_data.write("svr:%s\n" % self.client.core.window.network.server)
+        print self.client.core.window.network.server
+            
+        saved_data.close()
+
+
+
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
+        print "DEBUG: start IRC Activity"
         logging.debug('Starting the XoIRC Activity')
         self.set_title(_('Xo IRC Activity'))
 
@@ -38,11 +77,12 @@ class IRCActivity(activity.Activity):
 
         self.is_visible = False
 
-        client = purk.Client()
-        client.add_channel('#sugar')
-        client.join_server('irc.freenode.net')
-        client.show()
-        widget = client.get_widget()
+        self.client = purk.Client()
+        self.client.join_server('us.freenode.net')
+        self.client.add_channel('#sugar')
+        #self.client.add_channel('#lmms')
+        self.client.show()
+        widget = self.client.get_widget()
 
         # CANVAS
         self.set_canvas(widget)
@@ -51,40 +91,12 @@ class IRCActivity(activity.Activity):
         toolbox = activity.ActivityToolbox(self)
         self.set_toolbox(toolbox)
         self.show_all()
+        
+        print "DEBUG: running nickname command"
+        
+        self.client.run_command("/nick hellobv")
 
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
 
-    def read_file(self, file_path):
-        try:
-            data_file = open(file_path, 'r')
-            data = data_file.readlines()
-            
-            # looking for nickname
-            for part in data:
-                if 'nck:' in part:
-                    self.client.run_command('/nick %s' % part[4:])
-                
-                if 'ch:' in part:
-                    self.client.add_channel(part[3:])
-                
-                if 'svr:' in part:
-                    self.client.join_server(part[4:])
-        except:
-            logging.debug("error when reading")
-			
-    def write_file(self, file_path):
-        logging.debug("executing write_file")
-        try:
-            saved_data = open(file_path, 'w')
-            saved_data.write("nck:%s\n" % self.client.core.window.network.me)
-            
-            for channel in self.client.core.channels:
-                saved_data.write("ch:%s\n" % channel)
-            
-            saved_data.write("svr:%s\n" % self.client.core.window.network.server)
-            
-            saved_data.close()
-            
-        except:
-            logging.debug("error when writing")
+
