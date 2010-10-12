@@ -70,6 +70,11 @@ class IRCActivity(activity.Activity):
 
         # TOOLBAR
         toolbox = activity.ActivityToolbox(self)
+
+        # Remove the Share button, since this activity isn't shareable
+        toolbar = toolbox.get_activity_toolbar()
+        toolbar.remove(toolbar.share)
+
         self.set_toolbox(toolbox)
         self.show_all()
         
