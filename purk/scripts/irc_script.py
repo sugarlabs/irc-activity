@@ -120,11 +120,22 @@ def setdownRaw(e):
             e.done = True
             
         elif e.msg[1] == "PRIVMSG":
-            core.events.trigger('Text', e)
+            if len(e.msg[3]) > 8 and e.msg[3][0:7] == "\x01ACTION":
+                e.text = ' '.join(e.msg[3:])[8:-1]
+                core.events.trigger('Action', e)
+            elif len(e.msg[3]) > 1 and e.msg[3][0:1] == "\x01":
+                e.text = ' '.join(e.msg[3:])[1:-1]
+                core.events.trigger('Ctcp', e)
+            else:
+                core.events.trigger('Text', e)
             e.done = True
         
         elif e.msg[1] == "NOTICE":
-            core.events.trigger('Notice', e)
+            if len(e.msg[3]) > 1 and e.msg[3][0:1] == "\x01":
+                e.text = ' '.join(e.msg[3:])[1:-1]
+                core.events.trigger('CtcpReply', e)
+            else:
+                core.events.trigger('Notice', e)
             e.done = True
         
         elif e.msg[1] == "TOPIC":
@@ -237,6 +248,14 @@ def onCommandSay(e):
         e.network.msg(e.window.id, ' '.join(e.args))
     else:
         raise core.events.CommandError("There's no one here to speak to.")
+
+def onCommandCtcp(e):
+    if len(e.args) > 2:
+        message = ('\x01' + e.args[1].upper() + ' ' +
+                   ' '.join(e.args[2:]) + '\x01')
+    else:
+        message = ('\x01' + e.args[1].upper() + '\x01')
+    e.network.msg(e.args[0], message)
 
 def onCommandMsg(e):
     e.network.msg(e.args[0], ' '.join(e.args[1:]))

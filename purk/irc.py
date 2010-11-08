@@ -295,18 +295,39 @@ class Network(object):
     def msg(self, target, msg):
         self.raw("PRIVMSG %s :%s" % (target, msg))
         
-        self.events.trigger(
-            'OwnText', source=self.me, target=str(target), text=msg,
-            network=self, window=windows.get_default(self, self.manager)
-            )
+        
+        if len(msg) > 8 and msg[0:7] == "\x01ACTION":
+            self.events.trigger(
+                'OwnAction', source=self.me, target=str(target),
+                text=msg[8:-1],
+                network=self, window=windows.get_default(self, self.manager)
+                )
+        elif len(msg) > 1 and msg[0:1] == "\x01":
+            self.events.trigger(
+                'OwnCtcp', source=self.me, target=str(target),
+                text=msg[1:-1],
+                network=self, window=windows.get_default(self, self.manager)
+                )
+        else:
+            self.events.trigger(
+                'OwnText', source=self.me, target=str(target), text=msg,
+                network=self, window=windows.get_default(self, self.manager)
+                )
 
     def notice(self, target, msg):
         self.raw("NOTICE %s :%s" % (target, msg))
         
-        self.events.trigger(
-            'OwnNotice', source=self.me, target=str(target), text=msg,
-            network=self, window=windows.get_default(self)
-            )
+        if len(msg) > 1 and msg[0:1] == "\x01":
+            self.events.trigger(
+                'OwnCtcpReply', source=self.me, target=str(target),
+                text=msg[1:-1],
+                network=self, window=windows.get_default(self, self.manager)
+                )
+        else:
+            self.events.trigger(
+                'OwnNotice', source=self.me, target=str(target), text=msg,
+                network=self, window=windows.get_default(self)
+                )
 
 #a Network that is never connected
 class DummyNetwork(Network):

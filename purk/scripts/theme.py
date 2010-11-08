@@ -165,11 +165,7 @@ def onText(e):
     color = getsourcecolor(e)
     to_write = prefix(e)
     
-    if len(e.text) > 8 and e.text[0:7] == "\x01ACTION":
-
-       # This is an action.
-       to_write += "%s %s" % (format_source(e), e.text[7:-1])
-    elif e.network.me == e.target:    # this is a pm
+    if e.network.me == e.target:    # this is a pm
         if e.window.id == e.network.norm_case(e.source):
             to_write += "\x02<\x0F%s\x0F\x02>\x0F " % (format_source(e))
         else:
@@ -191,11 +187,7 @@ def onOwnText(e):
     color = getsourcecolor(e)
     to_write = prefix(e)
 
-    if len(e.text) > 8 and e.text[0:7] == "\x01ACTION":
-
-       # This is an action.
-       to_write += "%s%s" % (format_source(e), e.text[7:-1])
-    elif e.window.id == e.network.norm_case(e.target):
+    if e.window.id == e.network.norm_case(e.target):
         to_write += "\x02<\x0F%s\x0F\x02>\x0F %s" % (format_source(e), e.text)
     else:
         to_write += "%s->\x0F \x02*\x0F%s\x0F\x02*\x0F %s" % (color, e.target, e.text)
@@ -243,9 +235,25 @@ def onCtcp(e):
     if not e.quiet:
         e.window.write(to_write)
 
+def onOwnCtcp(e):
+    color = getsourcecolor(e)
+    to_write = "%s-> \x02[\x02%s\x0F\x02]\x0F %s" % (prefix(e), format_source(e), e.text)
+    
+    if not e.quiet:
+        e.window.write(to_write)
+
 def onCtcpReply(e):
     color = getsourcecolor(e)
     to_write = "%s%s--- %s reply from %s:\x0F %s" % (prefix(e), color, e.name.capitalize(), format_source(e), ' '.join(e.args))
+    
+    window = windows.manager.get_active()
+    if window.network != e.network:
+        window = windows.get_default(e.network)
+    window.write(to_write, widgets.TEXT)
+
+def onOwnCtcpReply(e):
+    color = getsourcecolor(e)
+    to_write = "%s-> %s--- %s reply from %s:\x0F %s" % (prefix(e), color, e.name.capitalize(), format_source(e), ' '.join(e.args))
     
     window = windows.manager.get_active()
     if window.network != e.network:
