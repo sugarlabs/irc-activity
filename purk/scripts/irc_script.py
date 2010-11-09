@@ -607,10 +607,11 @@ def unsetautojoin(network, channel):
             joinlist.pop(i)
 
 def onChannelMenu(e):
-    def toggle_join():
-        if isautojoin(e.network, e.channel):
-            unsetautojoin(e.network, e.channel)
-        else:
-            setautojoin(e.network, e.channel)
-    
-    e.menu.append(('Autojoin', isautojoin(e.network, e.channel), toggle_join))
+    pass
+#    def toggle_join():
+#        if isautojoin(e.network, e.channel):
+#            unsetautojoin(e.network, e.channel)
+#        else:
+#            setautojoin(e.network, e.channel)
+#    
+#    e.menu.append(('Autojoin', isautojoin(e.network, e.channel), toggle_join))
