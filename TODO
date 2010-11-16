@@ -1,4 +1,6 @@
-* move this list to the Trac queue
 * Clean PUrk code
 * Better colors interface
-* Bao Vuong will be doing Journal implementation.
+* I18N support (lots of fixed English strings right now)
+* Pop up last active channel when loading from journal
+* Direct the user to localized channels other than #sugar
+* Multi-server support, maybe?

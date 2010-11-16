@@ -1,7 +1,8 @@
-XoIRC : 
--------
-XoIRC Activity, is an Internet Relay Chat (IRC) Client for Sugar. 
-The core client it's based on URK, the new name is Purk, it aims to 
-be a simple IRC GTK+ Widget. 
+Sugar IRC Activity
 
-comments and suggestions are welcome to Eduardo Silva <edsiper@gmail.com>.
+This is a simple Internet Relay Chat (IRC) Client for Sugar, based on
+a (now moribund) Python IRC client called "Urk".
+
+Original code by Eduardo Silva <edsiper@gmail.com>.
+Maintained from 2008-2010 by Mel Chua <mel@melchua.com>.
+Recent additions by Fran Rogers <fran@dumetella.net>.

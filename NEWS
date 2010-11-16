@@ -1,0 +1,5 @@
+Version 7 (2010-11-15)
+* Added support for saving to/loading from the Sugar Journal.
+  Nick, channels joined, and scrollback are now persistent between sessions.
+* Proper CTCP support.
+* Removed buttons for activity sharing (not applicable).

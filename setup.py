@@ -19,5 +19,5 @@
 
 from sugar.activity import bundlebuilder
 
-bundlebuilder.start('XoIRC')
+bundlebuilder.start()
 
