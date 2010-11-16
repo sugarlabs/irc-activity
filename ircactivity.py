@@ -21,36 +21,20 @@ from gettext import gettext as _
 
 import gtk
 import dbus
+import simplejson
 
 from sugar.activity import activity
 from sugar import env
 import purk
+import purk.conf
 
 class IRCActivity(activity.Activity):
-			
-    def write_file(self, file_path):
-        print "DEBUG: executing write_file"
-        
-        print "=== nickname ==="
-        self.metadata['nickname'] = self.client.core.window.network.me
-        print "=== ======== ==="
-        
-        print "=== channels ==="
-        self.metadata['channels'] = self.client.core.channels
-        print "=== ======== ==="
-        
-        print "=== server ==="
-        self.metadata['server'] = self.client.core.window.network.server
-        print "=== ====== ==="
-        
-        print "DEBUG: done with write_file"
-
 
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
-        print "DEBUG: start IRC Activity"
-        logging.debug('Starting the XoIRC Activity')
-        self.set_title(_('Xo IRC Activity'))
+
+        logging.debug('Starting the IRC Activity')
+        self.set_title(_('IRC Activity'))
 
         self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
         self.connect('visibility-notify-event',
@@ -59,9 +43,6 @@ class IRCActivity(activity.Activity):
         self.is_visible = False
 
         self.client = purk.Client()
-        self.client.join_server('us.freenode.net')
-        self.client.add_channel('#sugar')
-        #self.client.add_channel('#lmms')
         self.client.show()
         widget = self.client.get_widget()
 
@@ -77,26 +58,62 @@ class IRCActivity(activity.Activity):
 
         self.set_toolbox(toolbox)
         self.show_all()
-        
-        print "DEBUG: running nickname command"
-        
-        self.client.run_command("/nick hellobv")
-        
-        print "DEBUG: adding channels"
-        try:
-            for channel in self.metadata['channels']:
-                self.client.add_channel(channel)
-        except:
-            print "ERROR: cannot add channels"
-        
-        print "DEBUG: setting server"
-        
-        try:
-            self.client.run_command("/server " + self.metadata['server'])
-        except:
-            print "ERROR: cannot set server"
 
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
 
+    def default_config(self):
+        self.client.join_server('us.freenode.net')
+        self.client.add_channel('#sugar-irc-test')
 
+    def read_file(self, file_path):
+        if self.metadata['mime_type'] != 'text/plain':
+            self.default_config()
+            return
+
+        print "reading config"
+        fd = open(file_path, 'r')
+        text = fd.read()
+        data = simplejson.loads(text)
+        fd.close()
+
+        self.client.run_command('NICK %s' % (data['nick']))
+        self.client.nicks = [data['nick'],
+                             data['nick'] + '_',
+                             data['nick'] + '__']
+
+        self.client.join_server(data['server'])
+        for chan in data['channels']:
+            self.client.add_channel(chan)
+        print data
+
+    def write_file(self, file_path):
+        print "writing config"
+        if not self.metadata['mime_type']:
+            self.metadata['mime_type'] = 'text/plain'
+
+        data = {}
+        data['nick'] = self.client.core.window.network.me
+        data['server'] = self.client.core.window.network.server
+        data['username'] = self.client.core.window.network.server
+        data['fullname'] = self.client.core.window.network.fullname
+        data['password'] = self.client.core.window.network.password
+        data['current-window'] = self.client.core.manager.get_active().id
+        #data['current-tab'] = self._notebook.get_current_page()
+        data['channels'] = []
+        data['scrollback'] = {}
+
+        for chan in self.client.core.channels:
+            data['channels'].append(chan)
+
+        for i in range(self.client.core.manager.tabs.get_n_pages()):
+            win = self.client.core.manager.tabs.get_nth_page(i)
+            if win.id == "status":
+                continue
+            buf = win.output.get_buffer()
+            data['scrollback'][win.id] = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
+
+        fd = open(file_path, 'w')
+        text = simplejson.dumps(data)
+        fd.write(text)
+        fd.close()

@@ -303,7 +303,7 @@ def change_nick(network, nick):
     if not network.status:
         core.events.trigger(
             'Nick',
-            network=network, window=windows.get_default(network),
+            network=network, window=windows.get_default(network, core.manager),
             source=network.me, target=nick, address='', text=nick
             )
         network.nicks[0] = nick
