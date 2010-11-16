@@ -44,6 +44,8 @@ class IRCActivity(activity.Activity):
         self.is_visible = False
 
         self.client = purk.Client()
+        if handle.object_id is None:
+            self.default_config()
         self.client.show()
         widget = self.client.get_widget()
 
@@ -69,7 +71,6 @@ class IRCActivity(activity.Activity):
 
     def read_file(self, file_path):
         if self.metadata['mime_type'] != 'text/plain':
-            self.default_config()
             return
 
         fd = open(file_path, 'r')
