@@ -27,6 +27,7 @@ from sugar.activity import activity
 from sugar import env
 import purk
 import purk.conf
+import purk.windows
 
 class IRCActivity(activity.Activity):
 
@@ -71,24 +72,32 @@ class IRCActivity(activity.Activity):
             self.default_config()
             return
 
-        print "reading config"
         fd = open(file_path, 'r')
         text = fd.read()
         data = simplejson.loads(text)
         fd.close()
 
         self.client.run_command('NICK %s' % (data['nick']))
-        self.client.nicks = [data['nick'],
-                             data['nick'] + '_',
-                             data['nick'] + '__']
 
         self.client.join_server(data['server'])
         for chan in data['channels']:
             self.client.add_channel(chan)
-        print data
+
+        self.client.core.window.network.requested_joins = set()
+        for winid in data['scrollback'].keys():
+            if winid in data['channels']:
+                win = purk.windows.new(purk.windows.ChannelWindow,
+                                       self.client.core.window.network,
+                                       winid, self.client.core)
+            else:
+                win = purk.windows.new(purk.windows.QueryWindow,
+                                       self.client.core.window.network,
+                                       winid, self.client.core)
+            win.output.get_buffer().set_text(data['scrollback'][winid])
+            if winid == data['current-window']:
+                self.client.core.window.network.requested_joins = set([winid])
 
     def write_file(self, file_path):
-        print "writing config"
         if not self.metadata['mime_type']:
             self.metadata['mime_type'] = 'text/plain'
 
@@ -99,17 +108,15 @@ class IRCActivity(activity.Activity):
         data['fullname'] = self.client.core.window.network.fullname
         data['password'] = self.client.core.window.network.password
         data['current-window'] = self.client.core.manager.get_active().id
-        #data['current-tab'] = self._notebook.get_current_page()
         data['channels'] = []
         data['scrollback'] = {}
-
-        for chan in self.client.core.channels:
-            data['channels'].append(chan)
 
         for i in range(self.client.core.manager.tabs.get_n_pages()):
             win = self.client.core.manager.tabs.get_nth_page(i)
             if win.id == "status":
                 continue
+            if hasattr(win, 'nicklist'):
+                data['channels'].append(win.id)
             buf = win.output.get_buffer()
             data['scrollback'][win.id] = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
 
