@@ -31,7 +31,7 @@ def get(windowclass, network, id, core):
         id = network.norm_case(id)
 
     for w in core.manager:
-        if (type(w), w.network, w.id) == (windowclass, network, id):
+        if (type(w).__name__, w.network, w.id) == (windowclass.__name__, network, id):
             return w
 
 def get_with(manager, wclass=None, network=None, id=None):
