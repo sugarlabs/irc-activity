@@ -67,7 +67,7 @@ class IRCActivity(activity.Activity):
 
     def default_config(self):
         self.client.join_server('us.freenode.net')
-        self.client.add_channel('#sugar-irc-test')
+        self.client.add_channel('#sugar')
 
     def read_file(self, file_path):
         if self.metadata['mime_type'] != 'text/plain':
