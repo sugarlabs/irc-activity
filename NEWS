@@ -1,3 +1,6 @@
+Version 8 (2010-11-19)
+* Fixed inability to talk in restored channels (#2493)
+
 Version 7 (2010-11-15)
 * Added support for saving to/loading from the Sugar Journal. (#581)
   Nick, channels joined, and scrollback are now persistent between sessions.
