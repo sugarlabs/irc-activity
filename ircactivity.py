@@ -87,11 +87,11 @@ class IRCActivity(activity.Activity):
         self.client.core.window.network.requested_joins = set()
         for winid in data['scrollback'].keys():
             if winid in data['channels']:
-                win = purk.windows.new(purk.windows.ChannelWindow,
+                win = purk.windows.new(windows.ChannelWindow,
                                        self.client.core.window.network,
                                        winid, self.client.core)
             else:
-                win = purk.windows.new(purk.windows.QueryWindow,
+                win = purk.windows.new(windows.QueryWindow,
                                        self.client.core.window.network,
                                        winid, self.client.core)
             win.output.get_buffer().set_text(data['scrollback'][winid])
@@ -116,7 +116,7 @@ class IRCActivity(activity.Activity):
             win = self.client.core.manager.tabs.get_nth_page(i)
             if win.id == "status":
                 continue
-            if hasattr(win, 'nicklist'):
+            if win.is_channel():
                 data['channels'].append(win.id)
             buf = win.output.get_buffer()
             data['scrollback'][win.id] = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)

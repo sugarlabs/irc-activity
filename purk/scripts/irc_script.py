@@ -244,7 +244,7 @@ def setupInput(e):
         e.done = True
 
 def onCommandSay(e):
-    if isinstance(e.window, windows.ChannelWindow) or isinstance(e.window, windows.QueryWindow):
+    if e.window.is_query() or e.window.is_channel():
         e.network.msg(e.window.id, ' '.join(e.args))
     else:
         raise core.events.CommandError("There's no one here to speak to.")
@@ -271,7 +271,7 @@ def onCommandQuery(e):
             e.network.msg(e.args[0], ' '.join(e.args[1:]))
 
 def onCommandAction(e):
-    if isinstance(e.window, windows.ChannelWindow) or isinstance(e.window, windows.QueryWindow):
+    if e.window.is_query() or e.window.is_channel():
         e.network.msg(e.window.id, '\x01ACTION ' + ' '.join(e.args) + '\x01')
     else:
         raise core.events.CommandError("There's no one here to speak to.")
@@ -350,7 +350,7 @@ def onCommandJoin(e):
             e.network.join(' '.join(e.args), requested = 'n' not in e.switches)
         else:
             raise core.events.CommandError("We're not connected.")
-    elif isinstance(e.window, windows.ChannelWindow):
+    elif e.window.is_channel():
         e.window.network.join(e.window.id, requested = 'n' not in e.switches)
     else:
         raise core.events.CommandError("You must supply a channel.")
@@ -363,7 +363,7 @@ def onCommandPart(e):
             e.network.part(' '.join(e.args), requested = 'n' not in e.switches)
         else:
             raise core.events.CommandError("We're not connected.")
-    elif isinstance(e.window, windows.ChannelWindow):
+    elif e.window.is_channel():
         e.window.network.part(e.window.id, requested = 'n' not in e.switches)
     else:
         raise core.events.CommandError("You must supply a channel.")
@@ -375,7 +375,7 @@ def onCommandHop(e):
             e.network.join(' '.join(e.args), requested = False)
         else:
             raise core.events.CommandError("We're not connected.")
-    elif isinstance(e.window, windows.ChannelWindow):
+    elif e.window.is_channel():
         e.window.network.part(e.window.id, requested = False)
         e.window.network.join(e.window.id, requested = False)
     else:
@@ -516,7 +516,7 @@ needschan = {
     
 def setupCommand(e):
     if not e.done: 
-        if e.name in needschan and isinstance(e.window, windows.ChannelWindow):
+        if e.name in needschan and e.window.is_channel():
             valid_chan_prefixes = e.network.isupport.get('CHANTYPES', '#&+')
             chan_pos = needschan[e.name]
             

@@ -141,6 +141,12 @@ class Window(gtk.VBox):
         self.rawid = id
         
         self.__activity = set()
+
+    def is_query(self):
+        return False
+
+    def is_channel(self):
+        return False
     
 class SimpleWindow(Window):
     def __init__(self, network, id, core):    
@@ -215,6 +221,9 @@ class QueryWindow(Window):
 
         self.show_all()
 
+    def is_query(self):
+        return True
+
 def move_nicklist(paned, event):
     paned._moving = (
         event.type == gtk.gdk._2BUTTON_PRESS,
@@ -285,3 +294,6 @@ class ChannelWindow(Window):
         
         self.pack_end(pane)
         self.show_all()
+
+    def is_channel(self):
+        return True
