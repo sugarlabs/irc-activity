@@ -87,11 +87,11 @@ class IRCActivity(activity.Activity):
         self.client.core.window.network.requested_joins = set()
         for winid in data['scrollback'].keys():
             if winid in data['channels']:
-                win = purk.windows.new(windows.ChannelWindow,
+                win = purk.windows.new(purk.windows.ChannelWindow,
                                        self.client.core.window.network,
                                        winid, self.client.core)
             else:
-                win = purk.windows.new(windows.QueryWindow,
+                win = purk.windows.new(purk.windows.QueryWindow,
                                        self.client.core.window.network,
                                        winid, self.client.core)
             win.output.get_buffer().set_text(data['scrollback'][winid])
