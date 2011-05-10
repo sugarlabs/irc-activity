@@ -11,6 +11,7 @@ CONNECTING = 1
 INITIALIZING = 2
 CONNECTED = 3
 
+
 def parse_irc(msg, server):
     msg = msg.split(' ')
     
@@ -39,9 +40,10 @@ def parse_irc(msg, server):
     # note: this sucks and makes very little sense, but it matches the BNF
     #       as far as we've tested, which seems to be the goal
 
+
 def default_nicks():
     try:
-        nicks = [conf.get('nick')] + conf.get('altnicks',[])
+        nicks = [conf.get('nick')] + conf.get('altnicks', [])
         if not nicks[0]:
 
             # We're going to generate a nick based on the user's nick name
@@ -62,9 +64,9 @@ def default_nicks():
             # if it's more than 11 characters (as we need 5 for - and the
             # hash).
             if len(user_name_letters) == 0:
-               user_name_letters = "XO"
+                user_name_letters = "XO"
             if len(user_name_letters) > 11:
-               user_name_letters = user_name_letters[0:11]
+                user_name_letters = user_name_letters[0:11]
 
             # Finally, generate a nick by using those letters plus the first
             # four hash bits of the user's public key.
@@ -75,10 +77,11 @@ def default_nicks():
         nicks = ["purk"]
     return nicks
 
+
 class Network(object):
     socket = None
     
-    def __init__(self, core, server="irc.default.org", port=6667, nicks=[], 
+    def __init__(self, core, server="irc.default.org", port=8001, nicks=[], 
                     username="", fullname="", name=None, **kwargs):
         self.core = core
         self.manager = core.manager
@@ -100,10 +103,10 @@ class Network(object):
             'PREFIX': '(ohv)@%+',
             'CHANMODES': 'b,k,l,imnpstr',
         }
-        self.prefixes = {'o':'@', 'h':'%', 'v':'+', '@':'o', '%':'h', '+':'v'}
+        self.prefixes = {'o': '@', 'h': '%', 'v': '+', '@': 'o', '%': 'h', '+': 'v'}
         
         self.status = DISCONNECTED
-        self.failedhosts = [] #hosts we've tried and failed to connect to
+        self.failedhosts = []  # hosts we've tried and failed to connect to
         self.channel_prefixes = '&#+$'   # from rfc2812
         
         self.on_channels = set()
@@ -121,9 +124,9 @@ class Network(object):
             #import random
             #random.seed()
             #random.shuffle(result)
-            if socket.has_ipv6: #prefer ipv6
-                result = [(f, t, p, c, a) for (f, t, p, c, a) in result if f == socket.AF_INET6]+result
-            elif hasattr(socket,"AF_INET6"): #ignore ipv6
+            if socket.has_ipv6:  # prefer ipv6
+                result = [(f, t, p, c, a) for (f, t, p, c, a) in result if f == socket.AF_INET6] + result
+            elif hasattr(socket, "AF_INET6"):  # ignore ipv6
                 result = [(f, t, p, c, a) for (f, t, p, c, a) in result if f != socket.AF_INET6]
             
             self.failedlasthost = False
@@ -173,8 +176,11 @@ class Network(object):
         # Auto join channels on connect
         for channel in self.core.channels:
             self.core.run_command("/join %s" % channel)
-
+        for channelother in self.core.channels:
+            self.core.run_command("/join %s" % channelother)
+    
     #called when we read data or failed to read data
+    
     def on_read(self, result, error):
         if error:
             self.disconnect(error=error[1])
@@ -214,7 +220,7 @@ class Network(object):
                     )
         
         if "!" in pmsg[0]:
-            e_data.source, e_data.address = pmsg[0].split('!',1)
+            e_data.source, e_data.address = pmsg[0].split('!', 1)
             
         else:
             e_data.source, e_data.address = pmsg[0], ''
@@ -274,10 +280,10 @@ class Network(object):
         
     def join(self, target, key='', requested=True):
         if key:
-            key = ' '+key
-        self.raw("JOIN %s%s" % (target,key))
+            key = ' ' + key
+        self.raw("JOIN %s%s" % (target, key))
         if requested:
-            for chan in target.split(' ',1)[0].split(','):
+            for chan in target.split(' ', 1)[0].split(','):
                 if chan == '0':
                     self.requested_parts.update(self.on_channels)
                 else:
@@ -289,13 +295,12 @@ class Network(object):
         
         self.raw("PART %s%s" % (target, msg))
         if requested:
-            for chan in target.split(' ',1)[0].split(','):
+            for chan in target.split(' ', 1)[0].split(','):
                 self.requested_parts.add(self.norm_case(target))
         
     def msg(self, target, msg):
         self.raw("PRIVMSG %s :%s" % (target, msg))
-        
-        
+                
         if len(msg) > 8 and msg[0:7] == "\x01ACTION":
             self.events.trigger(
                 'OwnAction', source=self.me, target=str(target),
@@ -330,7 +335,10 @@ class Network(object):
                 )
 
 #a Network that is never connected
+
+
 class DummyNetwork(Network):
+
     def __nonzero__(self):
         return False    
     
@@ -343,12 +351,15 @@ class DummyNetwork(Network):
         raise NotImplementedError, "Cannot connect dummy network."
     
     def raw(self, msg):
-        raise NotImplementedError, "Cannot send %s over the dummy network." % repr(msg)
+        raise NotImplementedError, "Cannot send %s over the dummfy network." % repr(msg)
 
 #dummy_network = DummyNetwork()
 
 #this was ported from srvx's tools.c
+
+
 def match_glob(text, glob, t=0, g=0):
+
     while g < len(glob):
         if glob[g] in '?*':
             star_p = q_cnt = 0
@@ -367,7 +378,7 @@ def match_glob(text, glob, t=0, g=0):
                 if g == len(glob):
                     return True
                 for i in xrange(t, len(text)):
-                    if text[i] == glob[g] and match_glob(text, glob, i+1, g+1):
+                    if text[i] == glob[g] and match_glob(text, glob, i + 1, g + 1):
                         return True
                 return False
             else:

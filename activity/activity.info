@@ -1,6 +1,6 @@
 [Activity]
 name = IRC
-activity_version = 8
-service_name = org.sugarlabs.IRC
+activity_version = 9
+bundle_id = org.sugarlabs.IRC-multilingua
 icon = activity-ircchat
 exec = sugar-activity ircactivity.IRCActivity 

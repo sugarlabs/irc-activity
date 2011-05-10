@@ -8,6 +8,10 @@ def append(window, manager):
     print "** DEBUG :: Add Window: ", window
     manager.add(window)
 
+def append(window1, manager):
+    print "** DEBUG :: Add window1: ", window1
+    manager.add(window1)
+
 def remove(window, manager):
     print "** DEBUG :: Remove Window: ", window
     manager.remove(window)
@@ -297,3 +301,7 @@ class ChannelWindow(Window):
 
     def is_channel(self):
         return True
+
+    def is_channel_other(self):
+        return True
+

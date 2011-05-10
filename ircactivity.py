@@ -29,6 +29,7 @@ import purk
 import purk.conf
 import purk.windows
 
+
 class IRCActivity(activity.Activity):
 
     def __init__(self, handle):
@@ -63,11 +64,14 @@ class IRCActivity(activity.Activity):
         self.show_all()
 
     def __visibility_notify_event_cb(self, window, event):
-        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
-
+        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED        
+    
+    #Configuracion por defecto 
+    
     def default_config(self):
         self.client.join_server('us.freenode.net')
         self.client.add_channel('#sugar')
+        self.client.add_channel_other('#sugar-es')
 
     def read_file(self, file_path):
         if self.metadata['mime_type'] != 'text/plain':
@@ -83,7 +87,7 @@ class IRCActivity(activity.Activity):
         self.client.join_server(data['server'])
         for chan in data['channels']:
             self.client.add_channel(chan)
-
+            self.client.add_channel_other(chan)
         self.client.core.window.network.requested_joins = set()
         for winid in data['scrollback'].keys():
             if winid in data['channels']:

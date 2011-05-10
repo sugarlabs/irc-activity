@@ -4,3 +4,4 @@
 * Pop up last active channel when loading from journal
 * Direct the user to localized channels other than #sugar
 * Multi-server support, maybe?
+* Recognize locale to add other channel #sugar-lang

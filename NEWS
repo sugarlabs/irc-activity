@@ -1,3 +1,9 @@
+9
+*Adding sugar-es tab
+*Adding i18n
+*Fixing activity.info (adding bundle_id)
+
+
 Version 8 (2010-11-19)
 * Fixed inability to talk in restored channels (#2493)
 

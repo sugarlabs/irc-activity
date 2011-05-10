@@ -84,7 +84,7 @@ class Client(object):
     def run_command(self, command):
         self.core.run_command(command)
 
-    def join_server(self, network_name, port=6667):
+    def join_server(self, network_name, port=8001):
         command = 'server '+ network_name + ' ' + str(port)
         self.run_command(command)
 
@@ -98,5 +98,10 @@ class Client(object):
         print "** DEBUG :: Add default channel: ", channel
         self.core.channels.append(channel)
 
+    def add_channel_other(self, channelother):
+        print "** DEBUG :: Add default channel other: ", channelother
+        self.core.channels.append(channelother)
+  
+   
     def clear_channels(self):
         self.core.channels = []
