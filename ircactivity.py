@@ -64,8 +64,7 @@ class IRCActivity(activity.Activity):
         self.show_all()
 
     def __visibility_notify_event_cb(self, window, event):
-        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED        
-    
+        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED 
     #Configuracion por defecto 
     
     def default_config(self):
