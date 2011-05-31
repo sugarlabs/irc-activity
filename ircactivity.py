@@ -54,18 +54,60 @@ class IRCActivity(activity.Activity):
         self.set_canvas(widget)
 
         # TOOLBAR
-        toolbox = activity.ActivityToolbox(self)
+        OLD_TOOLBAR = False
+ 
+        try:
+                from sugar.graphics.toolbarbox import ToolbarBox, ToolbarButton
+                from sugar.activity.widgets import ActivityToolbarButton, StopButton, \
+                 ShareButton, KeepButton, TitleEntry, ActivityButton
 
-        # Remove the Share button, since this activity isn't shareable
-        toolbar = toolbox.get_activity_toolbar()
-        toolbar.remove(toolbar.share)
+        except ImportError:
+                OLD_TOOLBAR = True
 
-        self.set_toolbox(toolbox)
-        self.show_all()
+        if OLD_TOOLBAR:
+                from sugar.activity.activity import Activity, ActivityToolbox
+                toolbox = activity.ActivityToolbox(self)
+
+                # Remove the Share button, since this activity isn't shareable
+                toolbar = toolbox.get_activity_toolbar()
+                toolbar.remove(toolbar.share)
+
+                self.set_toolbox(toolbox)
+                self.show_all()
+        else:
+                toolbar_box = ToolbarBox()
+                self.activity_button = ActivityButton(self)
+                toolbar_box.toolbar.insert(self.activity_button, 0)
+                self.activity_button.show()
+                      
+                title_entry = TitleEntry(self)
+                toolbar_box.toolbar.insert(title_entry, -1)
+                title_entry.show()
+                           
+           #     share_button = ShareButton(self) not sharable activity.
+           #     toolbar_box.toolbar.insert(share_button, -1)
+           #     share_button.show()
+                
+                keep_button = KeepButton(self)
+                toolbar_box.toolbar.insert(keep_button, -1)
+                keep_button.show()
+                        
+                separator = gtk.SeparatorToolItem()
+                separator.props.draw = False
+                separator.set_expand(True)
+                toolbar_box.toolbar.insert(separator, -1)
+                separator.show()
+                
+                stop_button = StopButton(self)
+                toolbar_box.toolbar.insert(stop_button, -1)
+                stop_button.show()
+ 
+                self.set_toolbar_box(toolbar_box)
+                toolbar_box.show()
 
     def __visibility_notify_event_cb(self, window, event):
-        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED 
-    #Configuracion por defecto 
+        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
+        #Configuracion por defecto 
     
     def default_config(self):
         self.client.join_server('us.freenode.net')
