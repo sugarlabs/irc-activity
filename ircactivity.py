@@ -58,8 +58,7 @@ class IRCActivity(activity.Activity):
 
         try:
                 from sugar.graphics.toolbarbox import ToolbarBox, ToolbarButton
-                from sugar.activity.widgets import
-                ActivityToolbarButton, StopButton, \
+                from sugar.activity.widgets import ActivityToolbarButton, StopButton, \
                 ShareButton, KeepButton, TitleEntry, ActivityButton
 
         except ImportError:
@@ -165,8 +164,7 @@ class IRCActivity(activity.Activity):
             if win.is_channel():
                 data['channels'].append(win.id)
             buf = win.output.get_buffer()
-            data['scrollback'][win.id] =
-            buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
+            data['scrollback'][win.id] = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
 
         fd = open(file_path, 'w')
         text = simplejson.dumps(data)
