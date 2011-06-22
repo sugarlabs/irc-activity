@@ -1,6 +1,4 @@
-import gtk
 
-import windows
 from conf import conf
 
 if 'networks' not in conf:

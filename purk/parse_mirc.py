@@ -259,7 +259,7 @@ def transform_bersirc(start, end):
 
 # ^LXXXXXX,YYYYYY
 def transform_bbersirc(start, end):
-  f  if 'foreground' in end and 'background' in end and (
+    if 'foreground' in end and 'background' in end and (
           end['foreground'] != start.get('foreground') or 
           end['background'] != start.get('background')):
         result = start.copy()
