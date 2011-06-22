@@ -7,9 +7,7 @@ import pango
 
 from conf import conf
 import parse_mirc
-import windows
 
-import servers
 
 # Window activity Constants
 HILIT = 'h'
