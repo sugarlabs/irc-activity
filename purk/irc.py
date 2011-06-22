@@ -1,5 +1,4 @@
 import socket
-import sys
 
 from conf import conf
 import ui
