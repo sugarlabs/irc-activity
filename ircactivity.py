@@ -15,12 +15,10 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-import os
 import logging
 from gettext import gettext as _
 
 import gtk
-import dbus
 import simplejson
 
 from sugar.activity import activity
@@ -107,6 +105,7 @@ class IRCActivity(activity.Activity):
 
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
+
         #Configuracion por defecto
 
     def default_config(self):
