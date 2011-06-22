@@ -115,15 +115,11 @@ class Network(object):
         
         self.buffer = ''
     
-    #called when we get a result from the dns lookup
+    # called when we get a result from the dns lookup
     def on_dns(self, result, error):
         if error:
             self.disconnect(error=error[1])
         else:
-            #import os
-            #import random
-            #random.seed()
-            #random.shuffle(result)
             if socket.has_ipv6:  # prefer ipv6
                 result = [(f, t, p, c, a) for (f, t, p, c, a) in result if f == socket.AF_INET6] + result
             elif hasattr(socket, "AF_INET6"):  # ignore ipv6
@@ -155,11 +151,11 @@ class Network(object):
                 else:
                     self.disconnect(error="Couldn't find a host we can connect to")
     
-    #called when socket.open() returns
+    # called when socket.open() returns
     def on_connect(self, result, error):
         if error:
             self.disconnect(error=error[1])
-            #we should immediately retry if we failed to open the socket and there are hosts left
+            # we should immediately retry if we failed to open the socket and there are hosts left
             if self.status == DISCONNECTED and not self.failedlasthost:
                 windows.get_default(self, self.core.manager).write("* Retrying with next available host")
                 self.connect()
@@ -179,7 +175,7 @@ class Network(object):
         for channelother in self.core.channels:
             self.core.run_command("/join %s" % channelother)
     
-    #called when we read data or failed to read data
+    # called when we read data or failed to read data
     
     def on_read(self, result, error):
         if error:
@@ -252,10 +248,10 @@ class Network(object):
         
         self.status = DISCONNECTED
         
-        #note: connecting from onDisconnect is probably a Bad Thing
+        # note: connecting from onDisconnect is probably a Bad Thing
         self.events.trigger('Disconnect', network=self, error=error)
         
-        #trigger a nick change if the nick we want is different from the one we
+        # trigger a nick change if the nick we want is different from the one we
         # had.
         if self.me != self.nicks[0]:
             self.events.trigger(
@@ -351,7 +347,7 @@ class DummyNetwork(Network):
         raise NotImplementedError, "Cannot connect dummy network."
     
     def raw(self, msg):
-        raise NotImplementedError, "Cannot send %s over the dummfy network." % repr(msg)
+        raise NotImplementedError, "Cannot send %s over the dummy network." % repr(msg)
 
 #dummy_network = DummyNetwork()
 
