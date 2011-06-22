@@ -1,20 +1,12 @@
 import sys 
 import os
 import thread
-import socket
-import signal
-import traceback
-
-import commands
 
 import gobject
 
 __sys_path = list(sys.path)
 import gtk
 sys.path = __sys_path
-
-import irc
-from conf import conf
 
 import widgets
 import windows

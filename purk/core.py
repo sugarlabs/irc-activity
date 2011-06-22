@@ -3,6 +3,7 @@ import sys
 import traceback
 import events
 import windows
+import irc 
 
 urkpath = os.path.abspath(os.path.dirname(__file__))
 
