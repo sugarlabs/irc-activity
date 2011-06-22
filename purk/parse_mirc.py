@@ -186,13 +186,13 @@ def parse_mirc(string):
 
     return tags, out
 
-#transforms for unparse_mirc
+# transforms for unparse_mirc
 
-#^O
+# ^O
 def transform_reset(start, end):
     return RESET, '', {}
 
-#^K
+# ^K
 def transform_color_reset(start, end):
     if ('foreground' in start and 'foreground' not in end) or \
           ('background' in start and 'background' not in end):
@@ -203,7 +203,7 @@ def transform_color_reset(start, end):
     else:
         return '','',start
 
-#^KXX
+# ^KXX
 def transform_color(start, end):
     if (start.get('foreground',99) != end.get('foreground',99)):
         confcolors = conf.get('colors', colors)
@@ -221,7 +221,7 @@ def transform_color(start, end):
     else:
         return '','',start
 
-#^KXX,YY
+# ^KXX,YY
 def transform_bcolor(start, end):
     if (start.get('background',99) != end.get('background',99)):
         confcolors = conf.get('colors', colors)
@@ -248,7 +248,7 @@ def transform_bcolor(start, end):
     else:
         return '','',start
 
-#^LXXXXXX
+# ^LXXXXXX
 def transform_bersirc(start, end):
     if 'foreground' in end and end['foreground'] != start.get('foreground'):
         result = start.copy()
@@ -257,9 +257,9 @@ def transform_bersirc(start, end):
     else:
         return '','',start
 
-#^LXXXXXX,YYYYYY
+# ^LXXXXXX,YYYYYY
 def transform_bbersirc(start, end):
-    if 'foreground' in end and 'background' in end and (
+  f  if 'foreground' in end and 'background' in end and (
           end['foreground'] != start.get('foreground') or 
           end['background'] != start.get('background')):
         result = start.copy()
@@ -270,7 +270,7 @@ def transform_bbersirc(start, end):
         return '','',start
 
 
-#^B
+# ^B
 def transform_underline(start, end):
     if ('underline' in start) != ('underline' in end):
         result = start.copy()
@@ -282,7 +282,7 @@ def transform_underline(start, end):
     else:
         return '','',start
 
-#^U
+# ^U
 def transform_bold(start, end):
     if ('weight' in start) != ('weight' in end):
         result = start.copy()
@@ -294,12 +294,12 @@ def transform_bold(start, end):
     else:
         return '','',start
 
-#^B^B
-#In some rare circumstances, we HAVE to do this to generate a working string
+# ^B^B
+# In some rare circumstances, we HAVE to do this to generate a working string
 def transform_dbold(start, end):
     return BOLD*2, '', start
 
-#return the formatting needed to transform one set of format tags to another
+# return the formatting needed to transform one set of format tags to another
 def transform(start, end, nextchar=" "):
     transform_functions = (
         transform_reset, transform_color_reset, transform_color, transform_bcolor,
