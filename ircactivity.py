@@ -82,10 +82,6 @@ class IRCActivity(activity.Activity):
                 toolbar_box.toolbar.insert(title_entry, -1)
                 title_entry.show()
 
-           #     share_button = ShareButton(self) not sharable activity.
-           #     toolbar_box.toolbar.insert(share_button, -1)
-           #     share_button.show()
-
                 keep_button = KeepButton(self)
                 toolbar_box.toolbar.insert(keep_button, -1)
                 keep_button.show()
