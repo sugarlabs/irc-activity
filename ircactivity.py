@@ -1,4 +1,5 @@
 # Copyright (C) 2007, Eduardo Silva <edsiper@gmail.com>
+# Copyright (C) 2012, Aneesh Dogra <lionaneesh@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -20,13 +21,18 @@ from gettext import gettext as _
 
 import gtk
 import simplejson
+import ConfigParser
+import os
 
 from sugar.activity import activity
+from sugar.activity.activity import get_bundle_path
 from sugar import env
 import purk
 import purk.conf
 import purk.windows
 
+DEFAULT_CONFIG_PATH = os.path.join(get_bundle_path(), 'irc_config.cfg')
+ETC_CONFIG_PATH = os.path.join('/', 'etc', 'irc_config.cfg')
 
 class IRCActivity(activity.Activity):
 
@@ -105,9 +111,34 @@ class IRCActivity(activity.Activity):
         #Configuracion por defecto
 
     def default_config(self):
-        self.client.join_server('us.freenode.net')
-        self.client.add_channel('#sugar')
-        self.client.add_channel_other('#sugar-es')
+        if os.path.exists(ETC_CONFIG_PATH):
+            self.read_defaults_from_config(ETC_CONFIG_PATH)
+        elif os.path.exists(DEFAULT_CONFIG_PATH):
+            self.read_defaults_from_config(DEFAULT_CONFIG_PATH)
+        else:
+            self.client.join_server('us.freenode.net')
+            self.client.add_channel('#sugar')
+            self.client.add_channel_other('#sugar-es')
+
+    def read_defaults_from_config(self, config_file):
+        logging.debug('Reading configuration from file %s' % config_file)
+        fp = open(config_file)
+        config = ConfigParser.ConfigParser()
+        config.readfp(fp)
+        fp.close()
+
+        if config.has_section('Config'):
+            if config.has_option('Config', 'Nick'):
+                nick = config.get('Config', 'Nick').strip()
+                self.client.run_command('NICK %s' % (nick))
+            if config.has_option('Config', 'Server'):
+                server = config.get('Config', 'Server').strip()
+                self.client.join_server(server)
+            if config.has_option('Config', 'Channels'):
+                channels = config.get('Config', 'Channels').split(',')
+                for channel in channels:
+                    self.client.add_channel(channel.strip())
+                    self.client.add_channel_other(channel.strip())
 
     def read_file(self, file_path):
         if self.metadata['mime_type'] != 'text/plain':
