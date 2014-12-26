@@ -19,14 +19,16 @@
 import logging
 from gettext import gettext as _
 
-import gtk
+from gi.repository import Gtk
+from gi.repository import Gdk
+
 import simplejson
 import ConfigParser
 import os
 
-from sugar.activity import activity
-from sugar.activity.activity import get_bundle_path
-from sugar import env
+from sugar3.activity import activity
+from sugar3.activity.activity import get_bundle_path
+from sugar3 import env
 import purk
 import purk.conf
 import purk.windows
@@ -42,7 +44,7 @@ class IRCActivity(activity.Activity):
         logging.debug('Starting the IRC Activity')
         self.set_title(_('IRC Activity'))
 
-        self.add_events(gtk.gdk.VISIBILITY_NOTIFY_MASK)
+        self.add_events(Gdk.EventMask.VISIBILITY_NOTIFY_MASK)
         self.connect('visibility-notify-event',
                      self.__visibility_notify_event_cb)
 
@@ -58,55 +60,33 @@ class IRCActivity(activity.Activity):
         self.set_canvas(widget)
 
         # TOOLBAR
-        OLD_TOOLBAR = False
+        from sugar3.graphics.toolbarbox import ToolbarBox, ToolbarButton
+        from sugar3.activity.widgets import ActivityToolbarButton, StopButton, ShareButton, TitleEntry, ActivityButton
 
-        try:
-                from sugar.graphics.toolbarbox import ToolbarBox, ToolbarButton
-                from sugar.activity.widgets import ActivityToolbarButton, StopButton, \
-                ShareButton, KeepButton, TitleEntry, ActivityButton
+        toolbar_box = ToolbarBox()
+        self.activity_button = ActivityButton(self)
+        toolbar_box.toolbar.insert(self.activity_button, 0)
+        self.activity_button.show()
 
-        except ImportError:
-                OLD_TOOLBAR = True
+        title_entry = TitleEntry(self)
+        toolbar_box.toolbar.insert(title_entry, -1)
+        title_entry.show()
 
-        if OLD_TOOLBAR:
-                from sugar.activity.activity import Activity, ActivityToolbox
-                toolbox = activity.ActivityToolbox(self)
+        separator = Gtk.SeparatorToolItem()
+        separator.props.draw = False
+        separator.set_expand(True)
+        toolbar_box.toolbar.insert(separator, -1)
+        separator.show()
 
-                # Remove the Share button, since this activity isn't shareable
-                toolbar = toolbox.get_activity_toolbar()
-                toolbar.remove(toolbar.share)
+        stop_button = StopButton(self)
+        toolbar_box.toolbar.insert(stop_button, -1)
+        stop_button.show()
 
-                self.set_toolbox(toolbox)
-                self.show_all()
-        else:
-                toolbar_box = ToolbarBox()
-                self.activity_button = ActivityButton(self)
-                toolbar_box.toolbar.insert(self.activity_button, 0)
-                self.activity_button.show()
-
-                title_entry = TitleEntry(self)
-                toolbar_box.toolbar.insert(title_entry, -1)
-                title_entry.show()
-
-                keep_button = KeepButton(self)
-                toolbar_box.toolbar.insert(keep_button, -1)
-                keep_button.show()
-
-                separator = gtk.SeparatorToolItem()
-                separator.props.draw = False
-                separator.set_expand(True)
-                toolbar_box.toolbar.insert(separator, -1)
-                separator.show()
-
-                stop_button = StopButton(self)
-                toolbar_box.toolbar.insert(stop_button, -1)
-                stop_button.show()
-
-                self.set_toolbar_box(toolbar_box)
-                toolbar_box.show()
+        self.set_toolbar_box(toolbar_box)
+        toolbar_box.show()
 
     def __visibility_notify_event_cb(self, window, event):
-        self.is_visible = event.state != gtk.gdk.VISIBILITY_FULLY_OBSCURED
+        self.is_visible = event.state != Gdk.VisibilityState.FULLY_OBSCURED
 
         #Configuracion por defecto
 

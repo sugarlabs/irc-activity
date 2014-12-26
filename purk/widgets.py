@@ -1,9 +1,9 @@
 import codecs
 
-import gobject
-import gtk
-import gtk.gdk
-import pango
+from gi.repository import GObject
+from gi.repository import Gtk
+from gi.repository import Gdk
+from gi.repository import Pango
 
 from conf import conf
 import parse_mirc
@@ -23,12 +23,12 @@ ACTIVITY_MARKUP = {
     }
 
 # This holds all tags for all windows ever
-tag_table = gtk.TextTagTable()
+tag_table = Gtk.TextTagTable()
 
-link_tag = gtk.TextTag('link')
-link_tag.set_property('underline', pango.UNDERLINE_SINGLE)
+link_tag = Gtk.TextTag.new('link')
+link_tag.set_property('underline', Pango.Underline.SINGLE)
 
-indent_tag = gtk.TextTag('indent')
+indent_tag = Gtk.TextTag.new('indent')
 indent_tag.set_property('indent', -20)
 
 tag_table.add(link_tag)
@@ -43,17 +43,17 @@ def style_me(widget, style):
 def set_style(widget_name, style):
     if style:
         # FIXME: find a better way...
-        dummy = gtk.Label()
+        dummy = Gtk.Label()
         dummy.set_style(None)
-    
+
         def apply_style_fg(value):
-            dummy.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse(value))
+            dummy.modify_text(Gtk.StateType.NORMAL, Gdk.color.parse(value))
 
         def apply_style_bg(value):
-            dummy.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse(value))
+            dummy.modify_base(Gtk.StateType.NORMAL, Gdk.color.parse(value))
 
         def apply_style_font(value):
-            dummy.modify_font(pango.FontDescription(value))
+            dummy.modify_font(Pango.FontDescription(value))
     
         style_functions = (
             ('fg', apply_style_fg),
@@ -82,19 +82,19 @@ def menu_from_list(alist):
                 if len(item) == 2:
                     name, function = item
                     
-                    menuitem = gtk.ImageMenuItem(name)
+                    menuitem = Gtk.ImageMenuItem(name)
                     
                 elif len(item) == 3:
                     name, stock_id, function = item
                     
                     if isinstance(stock_id, bool):
-                        menuitem = gtk.CheckMenuItem(name)
+                        menuitem = Gtk.CheckMenuItem(name)
                         menuitem.set_active(stock_id)
                     else:
-                        menuitem = gtk.ImageMenuItem(stock_id)
+                        menuitem = Gtk.ImageMenuItem(stock_id)
                     
                 if isinstance(function, list):
-                    submenu = gtk.Menu()
+                    submenu = Gtk.Menu()
                     for subitem in menu_from_list(function):
                         submenu.append(subitem)
                     menuitem.set_submenu(submenu)
@@ -105,12 +105,12 @@ def menu_from_list(alist):
                 yield menuitem
 
             else:
-                yield gtk.SeparatorMenuItem()
+                yield Gtk.SeparatorMenuItem()
                 
         last = item
 
-class Nicklist(gtk.TreeView):
-    def click(self, event):
+class Nicklist(Gtk.TreeView):
+    def click(self, widget, event):
         if event.button == 3:
             x, y = event.get_coords()
     
@@ -119,15 +119,15 @@ class Nicklist(gtk.TreeView):
             c_data = self.events.data(window=self.win, data=self[data], menu=[])
         
             self.events.trigger("ListRightClick", c_data)
-            
+
             if c_data.menu:
-                menu = gtk.Menu()
+                menu = Gtk.Menu()
                 for item in menu_from_list(c_data.menu):
                     menu.append(item)
                 menu.show_all()
                 menu.popup(None, None, None, event.button, event.time)
         
-        elif event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS:
+        elif event.button == 1 and event.type == Gdk.EventType._2BUTTON_PRESS:
             x, y = event.get_coords()
     
             (data,), path, x, y = self.get_path_at_pos(int(x), int(y))
@@ -157,18 +157,18 @@ class Nicklist(gtk.TreeView):
  
     def insert(self, pos, realname, markedupname, sortkey):
         self.get_model().insert(pos, (realname, markedupname, sortkey))
-        
+
     def replace(self, names):
-        self.set_model(gtk.ListStore(str, str, str))
-        
-        self.insert_column_with_attributes(
-            0, '', gtk.CellRendererText(), markup=1
-            ).set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        self.set_model(Gtk.ListStore(str, str, str))
+
+        column = Gtk.TreeViewColumn('', Gtk.CellRendererText(), text=1)
+        column.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
+        self.append_column(column)
 
         for name in names:
             self.append(*name)
         
-        self.get_model().set_sort_column_id(2, gtk.SORT_ASCENDING)
+        self.get_model().set_sort_column_id(2, Gtk.SortType.ASCENDING)
 
     def remove(self, realname):
         index = self.index(realname)
@@ -180,7 +180,7 @@ class Nicklist(gtk.TreeView):
     
     def clear(self):
         self.get_model().clear()
-        
+
     def __iter__(self):
         return (r[0] for r in self.get_model())
 
@@ -189,19 +189,19 @@ class Nicklist(gtk.TreeView):
         self.core = core
         self.events = core.events
 
-        gtk.TreeView.__init__(self)
-        
+        Gtk.TreeView.__init__(self)
+
         self.replace(())
 
         self.set_headers_visible(False)
         self.set_property("fixed-height-mode", True)
-        self.connect("button-press-event", Nicklist.click)
+        self.connect("button-press-event", self.click)
         self.connect_after("button-release-event", lambda *a: True)
-        
+
         style_me(self, "nicklist")
 
 # Label used to display/edit your current nick on a network
-class NickEditor(gtk.EventBox):
+class NickEditor(Gtk.EventBox):
     def nick_change(self, entry):
         oldnick, newnick = self.label.get_text(), entry.get_text()
         
@@ -222,21 +222,21 @@ class NickEditor(gtk.EventBox):
             self.events.trigger("NickEditMenu", c_data)
 
             if c_data.menu:
-                menu = gtk.Menu()
+                menu = Gtk.Menu()
                 for item in menu_from_list(c_data.menu):
                     menu.append(item)
                 menu.show_all()
                 menu.popup(None, None, None, event.button, event.time)
         
         else:
-            entry = gtk.Entry()
+            entry = Gtk.Entry()
             entry.set_text(self.label.get_text())
             entry.connect('activate', self.nick_change)
             entry.connect('focus-out-event', self.to_show_mode)
 
             self.remove(self.label)
             self.add(entry)
-            self.window.set_cursor(None)
+            self.get_window().set_cursor(None)
                 
             entry.show()
             entry.grab_focus()
@@ -245,14 +245,14 @@ class NickEditor(gtk.EventBox):
         self.remove(widget)
         self.add(self.label)
         self.win.input.grab_focus()
-        self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
+        self.get_window().set_cursor(Gdk.Cursor(Gdk.CursorType.XTERM))
 
     def __init__(self, window, core):
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
         self.events = core.events
         self.win = window
 
-        self.label = gtk.Label()
+        self.label = Gtk.Label()
         self.label.set_padding(5, 0)
         self.add(self.label)
 
@@ -262,11 +262,11 @@ class NickEditor(gtk.EventBox):
 
         self.connect(
             "realize", 
-            lambda *a: self.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.XTERM))
+            lambda *a: self.get_window().set_cursor(Gdk.Cursor(Gdk.CursorType.XTERM))
             )
 
 # The entry which you type in to send messages        
-class TextInput(gtk.Entry):
+class TextInput(Gtk.Entry):
     # Generates an input event
     def entered_text(self, ctrl):
         for line in self.text.splitlines():
@@ -288,9 +288,9 @@ class TextInput(gtk.Entry):
             self.select_region(self.cursor, self.cursor)
 
     #some nice toys for the scriptors
-    text = property(gtk.Entry.get_text, gtk.Entry.set_text)
-    cursor = property(gtk.Entry.get_position, gtk.Entry.set_position)
-    selection = property(gtk.Entry.get_selection_bounds, _set_selection)
+    text = property(Gtk.Entry.get_text, Gtk.Entry.set_text)
+    cursor = property(Gtk.Entry.get_position, Gtk.Entry.set_position)
+    selection = property(Gtk.Entry.get_selection_bounds, _set_selection)
     
     def insert(self, text):
         self.do_insert_at_cursor(self, text)
@@ -299,14 +299,14 @@ class TextInput(gtk.Entry):
     def do_grab_focus(self):
         temp = self.text, (self.selection or (self.cursor,)*2)
         self.text = ''
-        gtk.Entry.do_grab_focus(self)
+        Gtk.Entry.do_grab_focus(self)
         self.text, self.selection = temp
 
     def keypress(self, event):
         keychar = (
-            (gtk.gdk.CONTROL_MASK, '^'),
-            (gtk.gdk.SHIFT_MASK, '+'),
-            (gtk.gdk.MOD1_MASK, '!')
+            (Gdk.ModifierType.CONTROL_MASK, '^'),
+            (Gdk.ModifierType.SHIFT_MASK, '+'),
+            (Gdk.ModifierType.MOD1_MASK, '!')
             )
 
         key = ''
@@ -314,21 +314,21 @@ class TextInput(gtk.Entry):
             # we make this an int, because otherwise it leaks
             if int(event.state) & keymod:
                 key += char
-        key += gtk.gdk.keyval_name(event.keyval)
+        key += Gdk.keyval_name(event.keyval)
 
         self.events.trigger('KeyPress', key=key, string=event.string, window=self.win)
 
         if key == "^Return":
             self.entered_text(True)
         
-        up = gtk.gdk.keyval_from_name("Up")
-        down = gtk.gdk.keyval_from_name("Down")
-        tab = gtk.gdk.keyval_from_name("Tab")
+        up = Gdk.keyval_from_name("Up")
+        down = Gdk.keyval_from_name("Down")
+        tab = Gdk.keyval_from_name("Tab")
 
         return event.keyval in (up, down, tab)
     
     def __init__(self, window, core):
-        gtk.Entry.__init__(self)
+        Gtk.Entry.__init__(self)
         self.events = core.events
         self.core = core
         self.win = window
@@ -339,14 +339,14 @@ class TextInput(gtk.Entry):
         
         self.connect('activate', TextInput.entered_text, False)
 
-gobject.type_register(TextInput)
+GObject.type_register(TextInput)
 
-def prop_to_gtk(textview, (prop, val)):
+def prop_to_Gtk(textview, (prop, val)):
     if val == parse_mirc.BOLD:
-        val = pango.WEIGHT_BOLD
+        val = Pango.Weight.BOLD
 
     elif val == parse_mirc.UNDERLINE:
-        val = pango.UNDERLINE_SINGLE
+        val = Pango.Underline.SINGLE
         
     return {prop: val}
         
@@ -362,7 +362,7 @@ def word_from_pos(text, pos):
  
 def get_iter_at_coords(view, x, y):
     return view.get_iter_at_location(
-        *view.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT, int(x), int(y))
+        *view.window_to_buffer_coords(Gtk.TextWindowType.TEXT, int(x), int(y))
         )
 
 def get_event_at_iter(view, iter, core):
@@ -376,7 +376,7 @@ def get_event_at_iter(view, iter, core):
     
     #Caveat: text must be a unicode string, not utf-8 encoded; otherwise our
     # offsets will be off when we use anything outside 7-bit ascii
-    #gtk.TextIter.get_text returns unicode but gtk.TextBuffer.get_text does not
+    #Gtk.TextIter.get_text returns unicode but Gtk.TextBuffer.get_text does not
     text = line_strt.get_text(line_end).rstrip("\n")
     
     word, fr, to = word_from_pos(text, pos)
@@ -386,7 +386,7 @@ def get_event_at_iter(view, iter, core):
                 target=word, target_fr=fr, target_to=to,
                 )
 
-class TextOutput(gtk.TextView):
+class TextOutput(Gtk.TextView):
     def copy(self):
         startend = self.get_buffer().get_selection_bounds()
 
@@ -408,8 +408,8 @@ class TextOutput(gtk.TextView):
 
         text = parse_mirc.unparse_mirc(tagsandtext)
         
-        gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD).set_text(text)
-        gtk.clipboard_get(gtk.gdk.SELECTION_PRIMARY).set_text(text)
+        Gtk.clipboard_get(Gdk.SELECTION_CLIPBOARD).set_text(text)
+        Gtk.clipboard_get(Gdk.SELECTION_PRIMARY).set_text(text)
 
         return text
 
@@ -456,27 +456,27 @@ class TextOutput(gtk.TextView):
         
         cc = buffer.get_char_count()
 
-        buffer.insert_with_tags_by_name(
-            buffer.get_end_iter(),
-            text + line_ending,
-            'indent'
-            )
-
         for tag in tags:
             tag_name = str(tag['data'])
    
             if not tag_table.lookup(tag_name):
-                buffer.create_tag(tag_name, **prop_to_gtk(self, tag['data']))
+                buffer.create_tag(tag_name, **prop_to_Gtk(self, tag['data']))
 
             buffer.apply_tag_by_name(
                 tag_name, 
                 buffer.get_iter_at_offset(tag['from'] + cc),
                 buffer.get_iter_at_offset(tag['to'] + cc)
                 )
-    
-    def popup(self, menu):    
-        hover_iter = get_iter_at_coords(self, *self.hover_coords)
        
+        buffer.insert_with_tags(
+            buffer.get_end_iter(),
+            text + line_ending,
+            indent_tag
+            )
+
+    def popup(self, menu, event):
+        hover_iter = get_iter_at_coords(self, *self.hover_coords)
+
         menuitems = []
         if not hover_iter.ends_line():
             c_data = get_event_at_iter(self, hover_iter)
@@ -500,14 +500,14 @@ class TextOutput(gtk.TextView):
             
         menu.show_all()
     
-    def mousedown(self, event):
+    def mousedown(self, widget, event):
         if event.button == 3:
             self.hover_coords = event.get_coords()
     
-    def mouseup(self, event):
+    def mouseup(self, widget, event):
         if not self.get_buffer().get_selection_bounds():
             if event.button == 1:
-                hover_iter = get_iter_at_coords(self, event.x, event.y)
+                hover_iter = get_iter_at_coords(self, *self.hover_coords)
             
                 if not hover_iter.ends_line():
                     c_data = get_event_at_iter(self, hover_iter, self.core)
@@ -517,7 +517,7 @@ class TextOutput(gtk.TextView):
             if self.is_focus():
                 self.win.focus()
 
-    def clear_hover(self, _event=None):
+    def clear_hover(self, _widget=None, event=None):
         buffer = self.get_buffer()
     
         for fr, to in self.linking:
@@ -528,13 +528,13 @@ class TextOutput(gtk.TextView):
                 )
         
         self.linking = set()
-        self.get_window(gtk.TEXT_WINDOW_TEXT).set_cursor(None)
+        self.get_window(Gtk.TextWindowType.TEXT).set_cursor(None)
 
-    def hover(self, event):
+    def hover(self, widget, event):
         if self.linking:
             self.clear_hover()
 
-        hover_iter = get_iter_at_coords(self, event.x, event.y)
+        hover_iter = get_iter_at_coords(self, *self.hover_coords)
 
         if not hover_iter.ends_line():        
             h_data = get_event_at_iter(self, hover_iter, self.core)
@@ -561,61 +561,66 @@ class TextOutput(gtk.TextView):
                         )
                         
                     self.get_window(
-                        gtk.TEXT_WINDOW_TEXT
-                        ).set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND2))
+                        Gtk.TextWindowType.TEXT
+                        ).set_cursor(Gdk.Cursor(Gdk.HAND2))
         
         self.get_pointer()
 
-    def scroll(self, _allocation=None):
+    def scroll(self, widget, cairo_rect, _allocation=None):
         if self.autoscroll:
             def do_scroll():
-                self.scroller.value = self.scroller.upper - self.scroller.page_size
+                self.scroller.set_value(self.scroller.get_upper() - \
+                                        self.scroller.get_page_size())
                 self._scrolling = False
-            
+
             if not self._scrolling:
-                self._scrolling = gobject.idle_add(do_scroll)
+                self._scrolling = GObject.idle_add(do_scroll)
     
     def check_autoscroll(self, *args):
         def set_to_scroll():
-            self.autoscroll = self.scroller.value + self.scroller.page_size >= self.scroller.upper
+            self.autoscroll = self.scroller.get_value() +      \
+                              self.scroller.get_page_size() >= \
+                              self.scroller.get_upper()
             
-        gobject.idle_add(set_to_scroll)
+        GObject.idle_add(set_to_scroll)
 
     def __init__(self, core, window, buffer=None):
         if not buffer:
-            buffer = gtk.TextBuffer(tag_table)
+            buffer = Gtk.TextBuffer.new(tag_table)
         
-        gtk.TextView.__init__(self, buffer)
+        Gtk.TextView.__init__(self)
+        self.set_buffer(buffer)
         self.core = core
         self.events = core.events
         self.win = window
-        
-        self.set_size_request(0, -1)
-        
-        self.set_wrap_mode(gtk.WRAP_WORD_CHAR)
+
+        self.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         self.set_editable(False)
         self.set_cursor_visible(False)
 
-        self.set_property("left-margin", 3)
-        self.set_property("right-margin", 3)
+        self.set_left_margin(3)
+        self.set_right_margin(3)
 
         self.linking = set()
 
-        self.add_events(gtk.gdk.POINTER_MOTION_HINT_MASK)
-        self.add_events(gtk.gdk.LEAVE_NOTIFY_MASK)
+        self.add_events(Gdk.EventMask.POINTER_MOTION_HINT_MASK)
+        self.add_events(Gdk.EventMask.LEAVE_NOTIFY_MASK)
 
-        self.connect('populate-popup', TextOutput.popup)
-        self.connect('motion-notify-event', TextOutput.hover)
-        self.connect('button-press-event', TextOutput.mousedown)
-        self.connect('button-release-event', TextOutput.mouseup)
+        self.add_events(Gdk.EventMask.POINTER_MOTION_HINT_MASK)
+        self.add_events(Gdk.EventMask.LEAVE_NOTIFY_MASK)
+
+        self.connect('populate-popup', self.popup)
+        self.connect('motion-notify-event', self.hover)
+        self.connect('button-press-event', self.mousedown)
+        self.connect('button-release-event', self.mouseup)
         self.connect_after('button-release-event', lambda *a: True)
-        self.connect('leave-notify-event', TextOutput.clear_hover)
+        self.connect('leave-notify-event', self.clear_hover)
           
         self.hover_coords = 0, 0
 
         self.autoscroll = True
         self._scrolling = False
-        self.scroller = gtk.Adjustment()
+        self.scroller = Gtk.Adjustment()
 
         def setup_scroll(self, _adj, vadj):
             self.scroller = vadj
@@ -625,18 +630,19 @@ class TextOutput(gtk.TextView):
                     self.autoscroll = adj.value + adj.page_size >= adj.upper
     
                 vadj.connect("value-changed", set_scroll)
-
-        self.connect("set-scroll-adjustments", setup_scroll)
-        self.connect("size-allocate", TextOutput.scroll)
+        # FIXME: set-scroll adjustment is no longer emitted.
+        # Check http://developer.gnome.org/gtk3/3.3/ch25s02.html
+        #self.connect("set-scroll-adjustments", setup_scroll)
+        self.connect("size-allocate", self.scroll)
 
         def set_cursor(widget):
-            self.get_window(gtk.TEXT_WINDOW_TEXT).set_cursor(None)      
+            self.get_window(Gtk.TextWindowType.TEXT).set_cursor(None)
 
         self.connect("realize", set_cursor)
         
         style_me(self, "view")
 
-class WindowLabel(gtk.EventBox):
+class WindowLabel(Gtk.EventBox):
     def update(self):
         title = self.win.get_title()
         
@@ -657,30 +663,30 @@ class WindowLabel(gtk.EventBox):
 
             c_data.menu += [
                 None,
-                ("Close", gtk.STOCK_CLOSE, self.win.close),
+                ("Close", Gtk.STOCK_CLOSE, self.win.close),
                 ]
 
-            menu = gtk.Menu()
+            menu = Gtk.Menu()
             for item in menu_from_list(c_data.menu):
                 menu.append(item)
             menu.show_all()
-            menu.popup(None, None, None, event.button, event.time)
+            menu.popup(None, None, None, event.button, event.time, None)
 
     def __init__(self, window, core):
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
         self.core = core
         self.events = core.events
 
         self.win = window
         self.connect("button-press-event", WindowLabel.tab_popup)
         
-        self.label = gtk.Label()        
+        self.label = Gtk.Label()
         self.add(self.label)
 
         self.update()
         self.show_all()
         
-class FindBox(gtk.HBox):
+class FindBox(Gtk.HBox):
     def remove(self, *args):
         self.parent.remove(self)
         self.win.focus()
@@ -703,11 +709,11 @@ class FindBox(gtk.HBox):
     
         if search_down:
             cursor = cursor_iter.forward_search(
-                text, gtk.TEXT_SEARCH_VISIBLE_ONLY
+                text, Gtk.TEXT_SEARCH_VISIBLE_ONLY
                 )
         else:
             cursor = cursor_iter.backward_search(
-                text, gtk.TEXT_SEARCH_VISIBLE_ONLY
+                text, Gtk.TEXT_SEARCH_VISIBLE_ONLY
                 )
         
         if not cursor:
@@ -727,12 +733,12 @@ class FindBox(gtk.HBox):
         cursor_iter = buffer.get_iter_at_mark(buffer.get_insert())
 
     def __init__(self, window):
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
         
         self.win = window
 
-        self.up = gtk.Button(stock='gtk-go-up')
-        self.down = gtk.Button(stock='gtk-go-down')
+        self.up = Gtk.Button(stock='Gtk-go-up')
+        self.down = Gtk.Button(stock='Gtk-go-down')
 
         self.up.connect('clicked', self.clicked)
         self.down.connect('clicked', self.clicked, True)
@@ -740,36 +746,36 @@ class FindBox(gtk.HBox):
         self.up.set_property('can_focus', False)
         self.down.set_property('can_focus', False)
         
-        self.textbox = gtk.Entry()
+        self.textbox = Gtk.Entry()
         
         self.textbox.connect('focus-out-event', self.remove)
         self.textbox.connect('activate', self.clicked)
                 
-        self.pack_start(gtk.Label('Find:'), expand=False)
-        self.pack_start(self.textbox)
+        self.pack_start(Gtk.Label('Find:'), False, True, 0)
+        self.pack_start(self.textbox, True, True, 0)
 
-        self.pack_start(self.up, expand=False)
-        self.pack_start(self.down, expand=False)
+        self.pack_start(self.up, False, True, 0)
+        self.pack_start(self.down, False, True, 0)
 
         self.show_all()
 
-class UrkUITabs(gtk.VBox):
+class UrkUITabs(Gtk.VBox):
     def __init__(self, core):
-        gtk.VBox.__init__(self)
+        Gtk.VBox.__init__(self)
 
         # threading stuff
-        gtk.gdk.threads_init()
+        Gdk.threads_init()
         self.core = core
         self.events = core.events
         self.tabs = Notebook()
         self.tabs.set_property(
             "tab-pos", 
-            conf.get("ui-gtk/tab-pos", gtk.POS_BOTTOM)
+            conf.get("ui-Gtk/tab-pos", Gtk.PositionType.BOTTOM)
             )
 
         self.tabs.set_scrollable(True)
         self.tabs.set_property("can-focus", False)
-        self.pack_end(self.tabs)
+        self.pack_end(self.tabs, False, True, 0)
     
     def __iter__(self):
         return iter(self.tabs.get_children())
@@ -801,9 +807,9 @@ class UrkUITabs(gtk.VBox):
     def update(self, window):
         self.tabs.get_tab_label(window).update()
 
-class Notebook(gtk.Notebook):
+class Notebook(Gtk.Notebook):
     def __init__(self):
-        gtk.Notebook.__init__(self)
+        Gtk.Notebook.__init__(self)
         self.connect("switch-page", Notebook.switch_page, self)
 
     def switch_page(self, page, pnum, data):

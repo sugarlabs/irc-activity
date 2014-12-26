@@ -3,7 +3,7 @@ import os
 
 import dbus
 
-from sugar.activity import activity
+from sugar3.activity import activity
 
 session_bus = dbus.SessionBus()
 
