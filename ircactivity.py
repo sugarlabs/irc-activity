@@ -28,7 +28,9 @@ import os
 
 from sugar3.activity import activity
 from sugar3.activity.activity import get_bundle_path
-from sugar3 import env
+from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.activity.widgets import StopButton, TitleEntry, ActivityButton
+
 import purk
 import purk.conf
 import purk.windows
@@ -58,10 +60,6 @@ class IRCActivity(activity.Activity):
 
         # CANVAS
         self.set_canvas(widget)
-
-        # TOOLBAR
-        from sugar3.graphics.toolbarbox import ToolbarBox, ToolbarButton
-        from sugar3.activity.widgets import ActivityToolbarButton, StopButton, ShareButton, TitleEntry, ActivityButton
 
         toolbar_box = ToolbarBox()
         self.activity_button = ActivityButton(self)
