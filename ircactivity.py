@@ -129,6 +129,7 @@ class IRCActivity(activity.Activity):
             fp.close()
             return {"server": None, "channels": None}
 
+        DATA = {}
         if config.has_section('Config'):
             if config.has_option('Config', 'Nick'):
                 nick = config.get('Config', 'Nick').strip()
