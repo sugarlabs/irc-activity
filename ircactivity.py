@@ -29,6 +29,7 @@ import os
 from sugar3.activity import activity
 from sugar3.activity.activity import get_bundle_path
 from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toggletoolbutton import ToggleToolButton
 from sugar3.activity.widgets import StopButton, TitleEntry, ActivityButton
 
 import purk
@@ -72,6 +73,13 @@ class IRCActivity(activity.Activity):
         toolbar_box.toolbar.insert(title_entry, -1)
         title_entry.show()
 
+        connectionbtn = ToggleToolButton('connect')
+        connectionbtn.set_active(True)
+        connectionbtn.set_tooltip(_('Disconnect'))
+        connectionbtn.connect('toggled', self._connection_cb)
+        toolbar_box.toolbar.insert(connectionbtn, -1)
+        connectionbtn.show()
+
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -84,6 +92,41 @@ class IRCActivity(activity.Activity):
 
         self.set_toolbar_box(toolbar_box)
         toolbar_box.show()
+
+    def _get_data(self):
+        data = {}
+        data['nick'] = self.client.core.window.network.me
+        data['server'] = self.client.core.window.network.server
+        data['username'] = self.client.core.window.network.server
+        data['fullname'] = self.client.core.window.network.fullname
+        data['password'] = self.client.core.window.network.password
+        data['current-window'] = self.client.core.manager.get_active().id
+        data['channels'] = []
+        data['scrollback'] = {}
+
+        for i in range(self.client.core.manager.tabs.get_n_pages()):
+            win = self.client.core.manager.tabs.get_nth_page(i)
+            if win.id == "status":
+                continue
+            if win.is_channel():
+                data['channels'].append(win.id)
+            buf = win.output.get_buffer()
+            data['scrollback'][win.id] = buf.get_text(buf.get_start_iter(),
+                                                      buf.get_end_iter(), True)
+
+        return data
+
+    def _connection_cb(self, widget):
+        connected = widget.get_active()
+        if connected:
+            widget.set_tooltip(_('Disconnect'))
+            widget.set_icon_name('connect')
+            self._load_data(self.data)
+        else:
+            widget.set_tooltip(_('Connect'))
+            widget.set_icon_name('disconnect')
+            self.client.run_command('quit Leaving...')
+            self.data = self._get_data()
 
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != Gdk.VisibilityState.FULLY_OBSCURED
@@ -154,7 +197,9 @@ class IRCActivity(activity.Activity):
         text = fd.read()
         data = json.loads(text)
         fd.close()
+        self._load_data(data)
 
+    def _load_data(self, data):
         self.client.run_command('NICK %s' % (data['nick']))
 
         self.client.join_server(data['server'])
@@ -179,29 +224,7 @@ class IRCActivity(activity.Activity):
         if not self.metadata['mime_type']:
             self.metadata['mime_type'] = 'text/plain'
 
-        data = {}
-        data['nick'] = self.client.core.window.network.me
-        data['server'] = self.client.core.window.network.server
-        data['username'] = self.client.core.window.network.server
-        data['fullname'] = self.client.core.window.network.fullname
-        data['password'] = self.client.core.window.network.password
-        data['current-window'] = self.client.core.manager.get_active().id
-        data['channels'] = []
-        data['scrollback'] = {}
-
-        for i in range(self.client.core.manager.tabs.get_n_pages()):
-            win = self.client.core.manager.tabs.get_nth_page(i)
-            if win.id == "status":
-                continue
-            if win.is_channel():
-                data['channels'].append(win.id)
-            buf = win.output.get_buffer()
-            data['scrollback'][
-                win.id] = buf.get_text(
-                buf.get_start_iter(),
-                buf.get_end_iter(),
-                True)
-
+        data = self._get_data()
         fd = open(file_path, 'w')
         text = json.dumps(data)
         fd.write(text)
