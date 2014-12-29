@@ -1,14 +1,38 @@
 import socket
+import dbus
+import os
 
 from conf import conf
 import ui
 import windows
 import info
 
+from gi.repository import Gtk
+from sugar3.activity.activity import get_bundle_path
+from gettext import gettext as _
+
+try:
+    from gi.repository import Gst
+    _HAS_SOUND = True
+except:
+    _HAS_SOUND = False
+
+
 DISCONNECTED = 0
 CONNECTING = 1
 INITIALIZING = 2
 CONNECTED = 3
+
+BUS_NAME = 'org.freedesktop.Notifications'
+OBJ_PATH = '/org/freedesktop/Notifications'
+IFACE_NAME = 'org.freedesktop.Notifications'
+bus = dbus.SessionBus()
+notify_obj = bus.get_object(BUS_NAME, OBJ_PATH)
+notifications = dbus.Interface(notify_obj, IFACE_NAME)
+
+if _HAS_SOUND:
+    Gst.init([])
+    PLAYER = Gst.ElementFactory.make('playbin', 'Player')
 
 
 def parse_irc(msg, server):
@@ -50,8 +74,8 @@ def default_nicks():
             import sugar3.profile
             import hashlib
 
-            user_name = sugar.profile.get_nick_name()
-            pubkey = sugar.profile.get_pubkey()
+            user_name = sugar3.profile.get_nick_name()
+            pubkey = sugar3.profile.get_pubkey()
             m = hashlib.sha1()
             m.update(pubkey)
             hexhash = m.hexdigest()
@@ -80,13 +104,23 @@ def default_nicks():
 class Network(object):
     socket = None
 
-    def __init__(self, core, server="irc.freenode.net", port=8001, nicks=[],
-                 username="", fullname="", name=None, **kwargs):
+    def __init__(
+            self,
+            core,
+            activity,
+            server="irc.freenode.net",
+            port=8001,
+            nicks=[],
+            username="",
+            fullname="",
+            name=None,
+            **kwargs):
         self.core = core
         self.manager = core.manager
         self.server = server
         self.port = port
         self.events = core.events
+        self.activity = activity
 
         self.name = name or server
 
@@ -261,6 +295,22 @@ class Network(object):
             e_data.target = pmsg[2]
         else:
             e_data.target = pmsg[-1]
+
+        if len(pmsg) >= 4:
+            channel = pmsg[2]
+            msg = pmsg[3]
+            if self.me in msg and not self.activity.has_toplevel_focus():
+                self.activity.notify_user(
+                    e_data.source +
+                    _(" on ") +
+                    channel,
+                    msg)
+                if _HAS_SOUND:
+                    SOUNDS_PATH = os.path.join(get_bundle_path(), 'sounds')
+                    SOUND = os.path.join(SOUNDS_PATH, 'alert.wav')
+                    PLAYER.set_state(Gst.State.NULL)
+                    PLAYER.set_property('uri', 'file://%s' % SOUND)
+                    PLAYER.set_state(Gst.State.PLAYING)
 
         self.events.trigger('Raw', e_data)
 

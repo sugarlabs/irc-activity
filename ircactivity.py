@@ -54,7 +54,7 @@ class IRCActivity(activity.Activity):
 
         self.is_visible = False
 
-        self.client = purk.Client()
+        self.client = purk.Client(self)
         if handle.object_id is None:
             self.default_config()
         self.client.show()
