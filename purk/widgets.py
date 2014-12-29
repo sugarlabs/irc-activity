@@ -5,9 +5,10 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import Pango
 
+from sugar3 import profile
+
 from conf import conf
 import parse_mirc
-
 
 # Window activity Constants
 HILIT = 'h'
@@ -15,12 +16,8 @@ TEXT = 't'
 EVENT = 'e'
 CURRENT = 'c'
 
-ACTIVITY_MARKUP = {
-    HILIT: "<span style='italic' foreground='#00F'>%s</span>",
-    TEXT: "<span foreground='#ca0000'>%s</span>",
-    EVENT: "<span foreground='#363'>%s</span>",
-    CURRENT: "<span foreground='#000000'>%s</span>",
-}
+STROKE = profile.get_color().stroke
+FILL = profile.get_color().fill
 
 # This holds all tags for all windows ever
 tag_table = Gtk.TextTagTable()
@@ -36,6 +33,34 @@ tag_table.add(indent_tag)
 
 # FIXME: MEH hates dictionaries, they remind him of the bad words
 styles = {}
+
+
+def _luminance(color):
+    ''' Calculate luminance value '''
+    return int(color[1:3], 16) * 0.3 + int(color[3:5], 16) * 0.6 + \
+        int(color[5:7], 16) * 0.1
+
+
+def is_low_contrast(colors):
+    ''' We require lots of luminance contrast to make color text legible. '''
+    # To turn off color on color, always return False
+    return _luminance(colors[0]) - _luminance(colors[1]) < 96
+
+
+def is_dark_too_light(color):
+    return _luminance(color) > 96
+
+
+def lighter_color(colors):
+    ''' Which color is lighter? Use that one for the text nick color '''
+    if _luminance(colors[0]) > _luminance(colors[1]):
+        return 0
+    return 1
+
+
+def darker_color(colors):
+    ''' Which color is darker? Use that one for the text background '''
+    return 1 - lighter_color(colors)
 
 
 def style_me(widget, style):
@@ -674,7 +699,7 @@ class TextOutput(Gtk.TextView):
                 vadj.connect("value-changed", set_scroll)
         # FIXME: set-scroll adjustment is no longer emitted.
         # Check http://developer.gnome.org/gtk3/3.3/ch25s02.html
-        #self.connect("set-scroll-adjustments", setup_scroll)
+        # self.connect("set-scroll-adjustments", setup_scroll)
         self.connect("size-allocate", self.scroll)
 
         def set_cursor(widget):
@@ -693,12 +718,7 @@ class WindowLabel(Gtk.EventBox):
         for escapes in (('&', '&amp;'), ('<', '&lt;'), ('>', '&gt;')):
             title = title.replace(*escapes)
 
-        for a_type in (HILIT, TEXT, EVENT, CURRENT):
-            if a_type in self.win.activity:
-                title = ACTIVITY_MARKUP[a_type] % title
-                break
-
-        self.label.set_markup(title)
+        self.label.set_markup("<b>%s</b>" % title)
 
     def tab_popup(self, event):
         if event.button == 3:  # right click
@@ -726,6 +746,13 @@ class WindowLabel(Gtk.EventBox):
 
         self.label = Gtk.Label()
         self.add(self.label)
+
+        color = 'white'
+        if is_dark_too_light(STROKE):
+            color = 'black'
+
+        self.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse(STROKE))
+        self.label.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse(color))
 
         self.update()
         self.show_all()
@@ -861,7 +888,28 @@ class Notebook(Gtk.Notebook):
     def __init__(self):
         Gtk.Notebook.__init__(self)
         self.connect("switch-page", Notebook.switch_page, self)
+        self._current_tab = 0
 
     def switch_page(self, page, pnum, data):
+        page = self.get_nth_page(self._current_tab)
+        label = self.get_tab_label(page)
+        label.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse(STROKE))
+
+        color = 'white'
+        if is_dark_too_light(STROKE):
+            color = 'black'
+
+        label.label.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse(color))
+
+        self._current_tab = pnum
+        page = self.get_nth_page(self._current_tab)
+        label = self.get_tab_label(page)
+        label.modify_bg(Gtk.StateType.NORMAL, Gdk.color_parse(FILL))
+
+        color = 'white'
+        if is_dark_too_light(FILL):
+            color = 'black'
+
+        label.label.modify_fg(Gtk.StateType.NORMAL, Gdk.color_parse(color))
         self.get_nth_page(pnum).activity = None
         self.get_nth_page(pnum).activity = CURRENT

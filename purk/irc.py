@@ -80,7 +80,7 @@ def default_nicks():
 class Network(object):
     socket = None
 
-    def __init__(self, core, server="irc.default.org", port=8001, nicks=[],
+    def __init__(self, core, server="irc.freenode.net", port=8001, nicks=[],
                  username="", fullname="", name=None, **kwargs):
         self.core = core
         self.manager = core.manager
