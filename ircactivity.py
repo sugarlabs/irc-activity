@@ -37,6 +37,7 @@ import purk.windows
 
 DEFAULT_CONFIG_PATH = os.path.join(get_bundle_path(), 'irc_config.cfg')
 ETC_CONFIG_PATH = os.path.join('/', 'etc', 'irc_config.cfg')
+I18N_CHANNELS = ["#sugar", "#sugar-es"]
 
 
 class IRCActivity(activity.Activity):
@@ -93,19 +94,41 @@ class IRCActivity(activity.Activity):
         if os.path.exists(ETC_CONFIG_PATH):
             self.read_defaults_from_config(ETC_CONFIG_PATH)
         elif os.path.exists(DEFAULT_CONFIG_PATH):
-            self.read_defaults_from_config(DEFAULT_CONFIG_PATH)
+            data = self.read_defaults_from_config(DEFAULT_CONFIG_PATH)
+            if not data["server"]:
+                self.client.join_server('irc.freenode.net')
+            if not data["channels"]:
+                self.i18n_channels()
         else:
-            self.client.join_server('us.freenode.net')
-            self.client.add_channel('#sugar')
-            self.client.add_channel_other('#sugar-es')
+            self.client.join_server('irc.freenode.net')
+            self.i18n_channels()
+
+    def i18n_channels(self):
+        locale = os.environ["LANG"]
+        channels = ["#sugar"]
+        if locale:
+            locale = locale.split("_")[0]
+            if locale != "en":
+                channel = "#sugar-%s" % locale
+                channels.append(channel)
+
+        for channel in channels:
+            if channel in I18N_CHANNELS:
+                self.client.add_channel(channel)
 
     def read_defaults_from_config(self, config_file):
         logging.debug('Reading configuration from file %s' % config_file)
         fp = open(config_file)
         config = ConfigParser.ConfigParser()
-        config.readfp(fp)
-        fp.close()
+        try:
+            config.readfp(fp)
+            fp.close()
+        except Exception as error:
+            logging.debug('Reading configuration, error: %s' % error)
+            fp.close()
+            return {"server": None, "channels": None}
 
+        DATA = {"server": None, "chanels": None}
         if config.has_section('Config'):
             if config.has_option('Config', 'Nick'):
                 nick = config.get('Config', 'Nick').strip()
@@ -113,11 +136,15 @@ class IRCActivity(activity.Activity):
             if config.has_option('Config', 'Server'):
                 server = config.get('Config', 'Server').strip()
                 self.client.join_server(server)
+                DATA["server"] = server
             if config.has_option('Config', 'Channels'):
                 channels = config.get('Config', 'Channels').split(',')
+                DATA["channels"] = channels
                 for channel in channels:
                     self.client.add_channel(channel.strip())
                     self.client.add_channel_other(channel.strip())
+
+        return DATA
 
     def read_file(self, file_path):
         if self.metadata['mime_type'] != 'text/plain':
