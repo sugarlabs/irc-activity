@@ -49,7 +49,7 @@ class Trigger(object):
 
 class Core(object):
 
-    def __init__(self):
+    def __init__(self, activity):
         self.window = None
         self.trigger = Trigger()
         self.events = self.trigger.events
@@ -65,7 +65,7 @@ class Core(object):
         if not self.window:
             self.window = windows.new(
                 windows.StatusWindow,
-                irc.Network(self),
+                irc.Network(self, activity),
                 "status",
                 self)
             self.window.activate()
@@ -90,8 +90,8 @@ class Core(object):
 
 class Client(object):
 
-    def __init__(self):
-        self.core = Core()
+    def __init__(self, activity):
+        self.core = Core(activity)
         self.widget = self.core.manager
         self.widget.show_all()
 
