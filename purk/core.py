@@ -3,18 +3,18 @@ import sys
 import traceback
 import events
 import windows
-import irc 
+import irc
 
 urkpath = os.path.abspath(os.path.dirname(__file__))
 
 if os.path.abspath(os.curdir) != os.path.join(urkpath):
-    sys.path[0] = os.path.join(urkpath)    
+    sys.path[0] = os.path.join(urkpath)
 
 sys.path = [
     os.path.join(urkpath, "scripts"),
-    ] + sys.path
+] + sys.path
 
-script_path = urkpath+"/scripts"
+script_path = urkpath + "/scripts"
 
 from ui import *
 
@@ -22,6 +22,7 @@ from ui import *
 # Here I'm trying to handle the original URL IRC Client, urk don't use
 # normal classes . Let's try to get an Urk Widget:
 class Trigger(object):
+
     def __init__(self):
         self._mods = []
         self.events = events
@@ -30,7 +31,7 @@ class Trigger(object):
     def _load_scripts(self):
         script_path = urkpath + "/scripts"
         try:
-            suffix = os.extsep+"py"
+            suffix = os.extsep + "py"
             for script in os.listdir(script_path):
                 if script.endswith(suffix):
                     try:
@@ -45,7 +46,9 @@ class Trigger(object):
     def get_modules(self):
         return self._mods
 
+
 class Core(object):
+
     def __init__(self):
         self.window = None
         self.trigger = Trigger()
@@ -60,23 +63,33 @@ class Core(object):
             m.manager = self.manager
 
         if not self.window:
-           self.window = windows.new(windows.StatusWindow, irc.Network(self), "status", self)
-           self.window.activate()
+            self.window = windows.new(
+                windows.StatusWindow,
+                irc.Network(self),
+                "status",
+                self)
+            self.window.activate()
 
     def run_command(self, command):
         offset = 0
         if command[0] == '/':
             offset = 1
 
-        self.events.run(command[offset:], self.manager.get_active(), self.window.network)
+        self.events.run(
+            command[
+                offset:],
+            self.manager.get_active(),
+            self.window.network)
 
     def trigger_start(self):
         self.events.trigger("Start")
 
     def _add_script(self, module):
-        return 
+        return
+
 
 class Client(object):
+
     def __init__(self):
         self.core = Core()
         self.widget = self.core.manager
@@ -86,7 +99,7 @@ class Client(object):
         self.core.run_command(command)
 
     def join_server(self, network_name, port=8001):
-        command = 'server '+ network_name + ' ' + str(port)
+        command = 'server ' + network_name + ' ' + str(port)
         self.run_command(command)
 
     def get_widget(self):
@@ -102,7 +115,6 @@ class Client(object):
     def add_channel_other(self, channelother):
         print "** DEBUG :: Add default channel other: ", channelother
         self.core.channels.append(channelother)
-  
-   
+
     def clear_channels(self):
         self.core.channels = []

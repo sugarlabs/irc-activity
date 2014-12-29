@@ -38,6 +38,7 @@ import purk.windows
 DEFAULT_CONFIG_PATH = os.path.join(get_bundle_path(), 'irc_config.cfg')
 ETC_CONFIG_PATH = os.path.join('/', 'etc', 'irc_config.cfg')
 
+
 class IRCActivity(activity.Activity):
 
     def __init__(self, handle):
@@ -86,7 +87,7 @@ class IRCActivity(activity.Activity):
     def __visibility_notify_event_cb(self, window, event):
         self.is_visible = event.state != Gdk.VisibilityState.FULLY_OBSCURED
 
-        #Configuracion por defecto
+        # Configuracion por defecto
 
     def default_config(self):
         if os.path.exists(ETC_CONFIG_PATH):
@@ -168,7 +169,11 @@ class IRCActivity(activity.Activity):
             if win.is_channel():
                 data['channels'].append(win.id)
             buf = win.output.get_buffer()
-            data['scrollback'][win.id] = buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True)
+            data['scrollback'][
+                win.id] = buf.get_text(
+                buf.get_start_iter(),
+                buf.get_end_iter(),
+                True)
 
         fd = open(file_path, 'w')
         text = json.dumps(data)
