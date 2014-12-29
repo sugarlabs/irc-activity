@@ -47,7 +47,7 @@ def default_nicks():
 
             # We're going to generate a nick based on the user's nick name
             # and their public key.
-            import sugar.profile
+            import sugar3.profile
             import hashlib
 
             user_name = sugar.profile.get_nick_name()
