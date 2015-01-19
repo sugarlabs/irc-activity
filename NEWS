@@ -1,3 +1,17 @@
+11
+* Added summary, repository fields to activity.info, by ignacio
+* Add connect/disconnect button by gtrinidad
+* Ping notifications when the window is not opened. + Audio notifications by ignacio
+* Use xo colors, and black and white for tabs by ignacio
+* Set locale for default room in IRC by ignacio
+* Autopep8 to all code, by ignacio
+* Use json instead of simplejson, by godiard
+* Gtk3 port by aneesh, godiard
+* Edited the activity icon. Fixed #4126 by ignacio
+
+10
+*
+
 9
 *Adding sugar-es tab
 *Adding i18n
