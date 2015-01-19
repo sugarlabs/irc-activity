@@ -4,3 +4,5 @@ activity_version = 10
 bundle_id = org.sugarlabs.IRC
 icon = activity-ircchat
 exec = sugar-activity ircactivity.IRCActivity 
+summary = Chat with other Sugar/OLPC users and developers on the Internet via Internet Relay Chat (IRC).
+repository = git@github.com:godiard/irc-activity.git
