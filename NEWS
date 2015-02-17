@@ -1,3 +1,7 @@
+12
+* Fixed problems with popup menus by ignacio
+* pep8 for code by ignacio
+
 11
 * Added summary, repository fields to activity.info, by ignacio
 * Add connect/disconnect button by gtrinidad
