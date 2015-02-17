@@ -99,43 +99,26 @@ def set_style(widget_name, style):
     styles[widget_name] = style
 
 
-def menu_from_list(alist):
+def menu_from_list(menu, alist):
+    for item in menu.get_children():
+        menu.remove(item)
+
     while alist and not alist[-1]:
         alist.pop(-1)
 
+    menuitems = []
     last = None
     for item in alist:
-        if item != last:
-            if item:
-                if len(item) == 2:
-                    name, function = item
+        if not item:
+            continue
 
-                    menuitem = Gtk.ImageMenuItem(name)
+        if len(item) != 2:
+            continue
 
-                elif len(item) == 3:
-                    name, stock_id, function = item
-
-                    if isinstance(stock_id, bool):
-                        menuitem = Gtk.CheckMenuItem(name)
-                        menuitem.set_active(stock_id)
-                    else:
-                        menuitem = Gtk.ImageMenuItem(stock_id)
-
-                if isinstance(function, list):
-                    submenu = Gtk.Menu()
-                    for subitem in menu_from_list(function):
-                        submenu.append(subitem)
-                    menuitem.set_submenu(submenu)
-
-                else:
-                    menuitem.connect("activate", lambda a, f: f(), function)
-
-                yield menuitem
-
-            else:
-                yield Gtk.SeparatorMenuItem()
-
-        last = item
+        menuitem = Gtk.MenuItem.new_with_label(item[0])
+        menuitem.connect('activate', item[1])
+        menu.append(menuitem)
+        menu.show_all()
 
 
 class Nicklist(Gtk.TreeView):
@@ -154,11 +137,9 @@ class Nicklist(Gtk.TreeView):
             self.events.trigger("ListRightClick", c_data)
 
             if c_data.menu:
-                menu = Gtk.Menu()
-                for item in menu_from_list(c_data.menu):
-                    menu.append(item)
-                menu.show_all()
-                menu.popup(None, None, None, event.button, event.time)
+                menu_from_list(self.menu, c_data.menu)
+                self.menu.popup(None, None, None, None, event.button, event.time)
+                return True
 
         elif event.button == 1 and event.type == Gdk.EventType._2BUTTON_PRESS:
             x, y = event.get_coords()
@@ -227,6 +208,7 @@ class Nicklist(Gtk.TreeView):
 
         Gtk.TreeView.__init__(self)
 
+        self.menu = Gtk.Menu()
         self.replace(())
 
         self.set_headers_visible(False)
@@ -261,11 +243,9 @@ class NickEditor(Gtk.EventBox):
             self.events.trigger("NickEditMenu", c_data)
 
             if c_data.menu:
-                menu = Gtk.Menu()
-                for item in menu_from_list(c_data.menu):
-                    menu.append(item)
-                menu.show_all()
-                menu.popup(None, None, None, event.button, event.time)
+                menu_from_list(self.menu, c_data.menu)
+                menu.popup(None, None, None, None, event.button, event.time)
+                return True 
 
         else:
             entry = Gtk.Entry()
@@ -294,6 +274,7 @@ class NickEditor(Gtk.EventBox):
         self.label = Gtk.Label()
         self.label.set_padding(5, 0)
         self.add(self.label)
+        self.menu = Gtk.Menu()
 
         self.connect("button-press-event", self.to_edit_mode)
 
@@ -546,7 +527,7 @@ class TextOutput(Gtk.TextView):
 
         menuitems = []
         if not hover_iter.ends_line():
-            c_data = get_event_at_iter(self, hover_iter)
+            c_data = get_event_at_iter(self, hover_iter, self.core)
             c_data.menu = []
 
             self.events.trigger("RightClick", c_data)
@@ -559,13 +540,7 @@ class TextOutput(Gtk.TextView):
 
             menuitems = c_data.menu
 
-        for child in menu.get_children():
-            menu.remove(child)
-
-        for item in menu_from_list(menuitems):
-            menu.append(item)
-
-        menu.show_all()
+        menu_from_list(event, menuitems)
 
     def mousedown(self, widget, event):
         if event.button == 3:
@@ -629,7 +604,7 @@ class TextOutput(Gtk.TextView):
 
                     self.get_window(
                         Gtk.TextWindowType.TEXT
-                    ).set_cursor(Gdk.Cursor(Gdk.HAND2))
+                    ).set_cursor(Gdk.Cursor(Gdk.CursorType.HAND2))
 
         self.get_pointer()
 
@@ -720,29 +695,34 @@ class WindowLabel(Gtk.EventBox):
 
         self.label.set_markup("<b>%s</b>" % title)
 
-    def tab_popup(self, event):
-        if event.button == 3:  # right click
+    def tab_popup(self, widget, event):
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:  # right click
             c_data = self.events.data(window=self.win, menu=[])
             self.events.trigger("WindowMenu", c_data)
 
             c_data.menu += [
                 None,
-                ("Close", Gtk.STOCK_CLOSE, self.win.close),
+                ("Close", self.win.close),
             ]
 
-            menu = Gtk.Menu()
-            for item in menu_from_list(c_data.menu):
-                menu.append(item)
-            menu.show_all()
-            menu.popup(None, None, None, event.button, event.time, None)
+            menu_from_list(self.menu, c_data.menu)
+            self.menu.popup(None, None, None, None, event.button, event.time)
+            return True
 
-    def __init__(self, window, core):
+    def __init__(self, window, core, enable_menu=True):
         Gtk.EventBox.__init__(self)
         self.core = core
         self.events = core.events
 
         self.win = window
-        self.connect("button-press-event", WindowLabel.tab_popup)
+        if enable_menu:
+            self.menu = Gtk.Menu()
+            close_item = Gtk.MenuItem.new_with_label("Close")
+            close_item.connect('activate', self.win.close)
+            self.menu.append(close_item)
+            self.menu.show_all()
+
+            self.connect("button-press-event", self.tab_popup)
 
         self.label = Gtk.Label()
         self.add(self.label)
@@ -874,9 +854,14 @@ class UrkUITabs(Gtk.VBox):
         else:
             pos = self.tabs.get_n_pages() - 1
 
-        self.tabs.insert_page(window, WindowLabel(window, self.core), pos + 1)
+        enable_menu = True
+        if pos == -1:
+            enable_menu = False
+
+        self.tabs.insert_page(window, WindowLabel(window, self.core, enable_menu), pos + 1)
 
     def remove(self, window):
+        self.tabs._current_tab -= 1
         self.tabs.remove_page(self.tabs.page_num(window))
 
     def update(self, window):

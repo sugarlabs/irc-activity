@@ -127,7 +127,7 @@ class Window(Gtk.VBox):
         self.manager.set_active(self)
         self.focus()
 
-    def close(self):
+    def close(self, *args):
         self.events.trigger("Close", window=self)
         remove(self, self.manager)
 

@@ -83,10 +83,10 @@ def add_autojoin(network, channel):
 
 
 def make_nick_menu(e, target):
-    def query():
+    def query(*args):
         core.events.run('query %s' % target, e.window, e.window.network)
 
-    def whois():
+    def whois(*args):
         core.events.run('whois %s' % target, e.window, e.window.network)
 
     e.menu += [
