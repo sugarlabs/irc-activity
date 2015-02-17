@@ -138,7 +138,13 @@ class Nicklist(Gtk.TreeView):
 
             if c_data.menu:
                 menu_from_list(self.menu, c_data.menu)
-                self.menu.popup(None, None, None, None, event.button, event.time)
+                self.menu.popup(
+                    None,
+                    None,
+                    None,
+                    None,
+                    event.button,
+                    event.time)
                 return True
 
         elif event.button == 1 and event.type == Gdk.EventType._2BUTTON_PRESS:
@@ -245,7 +251,7 @@ class NickEditor(Gtk.EventBox):
             if c_data.menu:
                 menu_from_list(self.menu, c_data.menu)
                 menu.popup(None, None, None, None, event.button, event.time)
-                return True 
+                return True
 
         else:
             entry = Gtk.Entry()
@@ -696,7 +702,8 @@ class WindowLabel(Gtk.EventBox):
         self.label.set_markup("<b>%s</b>" % title)
 
     def tab_popup(self, widget, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:  # right click
+        # right click
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
             c_data = self.events.data(window=self.win, menu=[])
             self.events.trigger("WindowMenu", c_data)
 
@@ -858,7 +865,13 @@ class UrkUITabs(Gtk.VBox):
         if pos == -1:
             enable_menu = False
 
-        self.tabs.insert_page(window, WindowLabel(window, self.core, enable_menu), pos + 1)
+        self.tabs.insert_page(
+            window,
+            WindowLabel(
+                window,
+                self.core,
+                enable_menu),
+            pos + 1)
 
     def remove(self, window):
         self.tabs._current_tab -= 1
