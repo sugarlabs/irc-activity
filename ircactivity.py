@@ -138,9 +138,9 @@ class IRCActivity(activity.Activity):
             self.read_defaults_from_config(ETC_CONFIG_PATH)
         elif os.path.exists(DEFAULT_CONFIG_PATH):
             data = self.read_defaults_from_config(DEFAULT_CONFIG_PATH)
-            if not data["server"]:
+            if not "server" in data:
                 self.client.join_server('irc.freenode.net')
-            if not data["channels"]:
+            if not "channels" in data:
                 self.i18n_channels()
         else:
             self.client.join_server('irc.freenode.net')
