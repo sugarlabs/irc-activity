@@ -401,10 +401,16 @@ def word_from_pos(text, pos):
 
 
 def get_iter_at_coords(view, x, y):
-    return view.get_iter_at_location(
-        *view.window_to_buffer_coords(Gtk.TextWindowType.TEXT, int(x), int(y))
-    )
 
+    mouseClickPos = view.get_iter_at_location(
+                        *view.window_to_buffer_coords(
+                            Gtk.TextWindowType.TEXT, int(x), int(y)))
+    if Gtk.check_version(3, 19, 8) is None:
+        if not mouseClickPos[0]:
+            return False
+        mouseClickPos = mouseClickPos[1]
+
+    return mouseClickPos
 
 def get_event_at_iter(view, iter, core):
     buffer = view.get_buffer()
@@ -466,6 +472,13 @@ class TextOutput(Gtk.TextView):
 
     def set_y(self, y):
         iter = self.get_iter_at_location(0, y)
+
+        if Gtk.check_version(3, 19, 8) is None:
+            if not iter[0]:
+                return
+
+            iter = iter[1]
+
         if self.get_iter_location(iter).y < y:
             self.forward_display_line(iter)
         yalign = float(self.get_iter_location(iter).y - y) / self.height
