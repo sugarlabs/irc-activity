@@ -1,8 +1,11 @@
 [Activity]
 name = IRC
+license = GPLv2+;LGPLv2+
 activity_version = 12
 bundle_id = org.sugarlabs.IRC
 icon = activity-ircchat
 exec = sugar-activity ircactivity.IRCActivity 
 summary = Chat with other Sugar/OLPC users and developers on the Internet via Internet Relay Chat (IRC).
-repository = git@github.com:godiard/irc-activity.git
+repository = https://github.com/sugarlabs/irc-activity
+url = https://help.sugarlabs.org/en/irc.html
+tags = Internet
