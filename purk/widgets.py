@@ -1,5 +1,6 @@
 import codecs
 
+from gi.repository import GLib
 from gi.repository import GObject
 from gi.repository import Gtk
 from gi.repository import Gdk
@@ -635,7 +636,7 @@ class TextOutput(Gtk.TextView):
                 self._scrolling = False
 
             if not self._scrolling:
-                self._scrolling = GObject.idle_add(do_scroll)
+                self._scrolling = GLib.idle_add(do_scroll)
 
     def check_autoscroll(self, *args):
         def set_to_scroll():
@@ -643,7 +644,7 @@ class TextOutput(Gtk.TextView):
                 self.scroller.get_page_size() >= \
                 self.scroller.get_upper()
 
-        GObject.idle_add(set_to_scroll)
+        GLib.idle_add(set_to_scroll)
 
     def __init__(self, core, window, buffer=None):
         if not buffer:
