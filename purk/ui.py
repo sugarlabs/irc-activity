@@ -2,7 +2,7 @@ import sys
 import os
 import thread
 
-from gi.repository import GObject
+from gi.repository import GLib
 
 __sys_path = list(sys.path)
 from gi.repository import Gtk
@@ -23,11 +23,11 @@ def path(filename=""):
         return urkpath
 
 # Priority Constants
-PRIORITY_HIGH = GObject.PRIORITY_HIGH
-PRIORITY_DEFAULT = GObject.PRIORITY_DEFAULT
-PRIORITY_HIGH_IDLE = GObject.PRIORITY_HIGH_IDLE
-PRIORITY_DEFAULT_IDLE = GObject.PRIORITY_DEFAULT_IDLE
-PRIORITY_LOW = GObject.PRIORITY_LOW
+PRIORITY_HIGH = GLib.PRIORITY_HIGH
+PRIORITY_DEFAULT = GLib.PRIORITY_DEFAULT
+PRIORITY_HIGH_IDLE = GLib.PRIORITY_HIGH_IDLE
+PRIORITY_DEFAULT_IDLE = GLib.PRIORITY_DEFAULT_IDLE
+PRIORITY_LOW = GLib.PRIORITY_LOW
 
 
 def set_clipboard(text):
@@ -52,7 +52,7 @@ class GtkSource(object):
         self.tag = tag
 
     def unregister(self):
-        GObject.source_remove(self.tag)
+        GLib.source_remove(self.tag)
 
 
 def register_idle(f, *args, **kwargs):
@@ -60,7 +60,7 @@ def register_idle(f, *args, **kwargs):
 
     def callback():
         return f(*args, **kwargs)
-    return GtkSource(GObject.idle_add(callback, priority=priority))
+    return GtkSource(GLib.idle_add(callback, priority=priority))
 
 
 def register_timer(time, f, *args, **kwargs):
@@ -68,7 +68,7 @@ def register_timer(time, f, *args, **kwargs):
 
     def callback():
         return f(*args, **kwargs)
-    return GtkSource(GObject.timeout_add(time, callback, priority=priority))
+    return GtkSource(GLib.timeout_add(time, callback, priority=priority))
 
 
 def fork(cb, f, *args, **kwargs):
@@ -85,7 +85,7 @@ def fork(cb, f, *args, **kwargs):
                 if is_stopped.enabled:
                     cb(result, error)
 
-            GObject.idle_add(callback)
+            GLib.idle_add(callback)
 
     thread.start_new_thread(thread_func, ())
     return is_stopped
@@ -94,7 +94,7 @@ set_style = widgets.set_style
 
 
 def we_get_signal(*what):
-    GObject.idle_add(windows.manager.exit)
+    GLib.idle_add(windows.manager.exit)
 
 
 def open_file(path):
