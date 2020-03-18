@@ -1,6 +1,6 @@
 import sys
 import os
-import thread
+import _thread
 
 from gi.repository import GLib
 
@@ -9,8 +9,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 sys.path = __sys_path
 
-import widgets
-import windows
+from . import windows
 
 # Running from same package dir
 urkpath = os.path.dirname(__file__)
@@ -87,11 +86,8 @@ def fork(cb, f, *args, **kwargs):
 
             GLib.idle_add(callback)
 
-    thread.start_new_thread(thread_func, ())
+    _thread.start_new_thread(thread_func, ())
     return is_stopped
-
-set_style = widgets.set_style
-
 
 def we_get_signal(*what):
     GLib.idle_add(windows.manager.exit)

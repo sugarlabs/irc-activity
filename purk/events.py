@@ -22,7 +22,7 @@ class data(object):
     quiet = False
 
     def __init__(self, **kwargs):
-        for attr in kwargs.items():
+        for attr in list(kwargs.items()):
             setattr(self, *attr)
 
 trigger_sequence = ("pre", "setup", "on", "setdown", "post")
@@ -48,6 +48,7 @@ def trigger(e_name, e_data=None, **kwargs):
                 for f_ref, s_name in all_events[e_name][e_stage]:
                     try:
                         f_ref(e_data)
+                        print("f ref just executed")
                     except EventStopError:
                         return
                     except CommandError as e:
@@ -57,7 +58,7 @@ def trigger(e_name, e_data=None, **kwargs):
                         traceback.print_exc()
                     failure = False
     if failure:
-        print "Error handling: " + e_name
+        print("Error handling: " + e_name)
 
         return error
 
@@ -261,7 +262,7 @@ def onCommandPyexec(e):
     import pydoc  # fix nonresponsive help() command
     old_pager, pydoc.pager = pydoc.pager, pydoc.plainpager
     try:
-        exec ' '.join(e.args) in loc
+        exec(' '.join(e.args), loc)
     except:
         for line in traceback.format_exc().split('\n'):
             e.window.write(line)

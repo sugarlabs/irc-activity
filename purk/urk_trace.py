@@ -1,5 +1,5 @@
 import sys
-import commands
+import subprocess
 import linecache
 
 import time
@@ -9,7 +9,7 @@ last_mem = [0]
 
 def traceit_memory(frame, event, arg):
     if event == "line":
-        mem = int(" " + commands.getoutput(
+        mem = int(" " + subprocess.getoutput(
             "ps -eo cmd,rss | grep urk_trace.py | grep -v grep"
         ).split(" ")[-1])
 
@@ -30,7 +30,7 @@ def traceit_memory(frame, event, arg):
 
             data = "%s:%i: %s" % (name, lineno, line)
 
-            print "%s%s" % (data, mem.rjust(80 - len(data)))
+            print("%s%s" % (data, mem.rjust(80 - len(data))))
 
     return traceit_memory
 
@@ -52,7 +52,7 @@ def traceit(frame, event, arg):
 
             data = "%s:%i: %s" % (name, lineno, line)
 
-            print time.time(), data
+            print(time.time(), data)
 
             # if data in lines:
             #    lines[data] += 1
@@ -60,7 +60,7 @@ def traceit(frame, event, arg):
             #    lines[data] = 1
 
         except Exception as e:
-            print e
+            print(e)
 
     return traceit
 

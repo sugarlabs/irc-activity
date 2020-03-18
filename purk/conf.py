@@ -57,4 +57,4 @@ def save(*args):
 conf = {}
 
 if __name__ == '__main__':
-    print pprint(conf)
+    print(pprint(conf))

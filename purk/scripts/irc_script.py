@@ -38,10 +38,10 @@ def _nick_generator(network):
         nick = network.nicks[0]
     import itertools
     for i in itertools.count(1):
-        for j in xrange(len(NICK_SUFFIX) ** i):
+        for j in range(len(NICK_SUFFIX) ** i):
             suffix = ''.join(NICK_SUFFIX[(j /
                                           (len(NICK_SUFFIX) ** x)) %
-                                         len(NICK_SUFFIX)] for x in xrange(i))
+                                         len(NICK_SUFFIX)] for x in range(i))
             if network._nick_max_length:
                 yield nick[0:network._nick_max_length - i] + suffix
             else:
@@ -62,7 +62,7 @@ def setdownRaw(e):
                 if hasattr(e.network, '_nick_generator'):
                     if len(failednick) < len(e.network._next_nick):
                         e.network._nick_max_length = len(failednick)
-                    e.network._next_nick = e.network._nick_generator.next()
+                    e.network._next_nick = next(e.network._nick_generator)
                     e.network.raw('NICK %s' % e.network._next_nick)
                     e.network._nick_error |= (e.msg[1] == '432')
                 else:
@@ -72,7 +72,7 @@ def setdownRaw(e):
                     else:
                         e.network._nick_max_length = 0
                     e.network._nick_generator = _nick_generator(e.network)
-                    e.network._next_nick = e.network._nick_generator.next()
+                    e.network._next_nick = next(e.network._nick_generator)
                     e.network.raw('NICK %s' % e.network._next_nick)
 
             elif e.msg[1] == '431':  # no nickname given--this shouldn't happen

@@ -160,7 +160,7 @@ def topic(network, channel):
 
 
 def setupJoin(e):
-    print e
+    print(e)
     if e.source == e.network.me:
         e.network.channels[e.network.norm_case(e.target)] = Channel(e.target)
         e.network.raw('MODE ' + e.target)
