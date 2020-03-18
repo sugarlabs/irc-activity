@@ -51,11 +51,11 @@ def nick_completer(window, left, right, text):
 
 
 def script_completer(window, left, right, text):
-    return core.events.loaded.iterkeys()
+    return iter(core.events.loaded.keys())
 
 
 def network_completer(window, left, right, text):
-    return conf.get('networks', {}).iterkeys()
+    return iter(conf.get('networks', {}).keys())
 
 
 def get_completer_for(window):
@@ -121,7 +121,7 @@ def onKeyPress(e):
         if not recent_completer:
             recent_completer = get_completer_for(e.window)
 
-        recent_completer.next()
+        next(recent_completer)
 
     else:
         recent_completer = None

@@ -62,7 +62,7 @@ def onCommandSay(e):
             e.window.globals['_'] = result
         except SyntaxError:
             try:
-                exec text in e.window.globals, e.window.locals
+                exec(text, e.window.globals, e.window.locals)
             except:
                 traceback.print_exc()
         except:

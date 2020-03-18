@@ -30,9 +30,8 @@ bus = dbus.SessionBus()
 notify_obj = bus.get_object(BUS_NAME, OBJ_PATH)
 notifications = dbus.Interface(notify_obj, IFACE_NAME)
 
-if _HAS_SOUND:
-    Gst.init([])
-    PLAYER = Gst.ElementFactory.make('playbin', 'Player')
+Gst.init([])
+PLAYER = Gst.ElementFactory.make('playbin', 'Player')
 
 
 def parse_irc(msg, server):
@@ -305,12 +304,11 @@ class Network(object):
                     _(" on ") +
                     channel,
                     msg)
-                if _HAS_SOUND:
-                    SOUNDS_PATH = os.path.join(get_bundle_path(), 'sounds')
-                    SOUND = os.path.join(SOUNDS_PATH, 'alert.wav')
-                    PLAYER.set_state(Gst.State.NULL)
-                    PLAYER.set_property('uri', 'file://%s' % SOUND)
-                    PLAYER.set_state(Gst.State.PLAYING)
+                SOUNDS_PATH = os.path.join(get_bundle_path(), 'sounds')
+                SOUND = os.path.join(SOUNDS_PATH, 'alert.wav')
+                PLAYER.set_state(Gst.State.NULL)
+                PLAYER.set_property('uri', 'file://%s' % SOUND)
+                PLAYER.set_state(Gst.State.PLAYING)
 
         self.events.trigger('Raw', e_data)
 
@@ -429,7 +427,7 @@ class Network(object):
 
 class DummyNetwork(Network):
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
 
     def __init__(self, core):
@@ -469,7 +467,7 @@ def match_glob(text, glob, t=0, g=0):
             if star_p:
                 if g == len(glob):
                     return True
-                for i in xrange(t, len(text)):
+                for i in range(t, len(text)):
                     if text[i] == glob[g] and match_glob(
                             text,
                             glob,

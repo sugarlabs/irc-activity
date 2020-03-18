@@ -1,23 +1,22 @@
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-import irc
-from conf import conf
-import widgets
-
+from .conf import conf
+from . import widgets
+from . import irc
 
 def append(window, manager):
-    print "** DEBUG :: Add Window: ", window
+    print("** DEBUG :: Add Window: ", window)
     manager.add(window)
 
 
 def append(window1, manager):
-    print "** DEBUG :: Add window1: ", window1
+    print("** DEBUG :: Add window1: ", window1)
     manager.add(window1)
 
 
 def remove(window, manager):
-    print "** DEBUG :: Remove Window: ", window
+    print("** DEBUG :: Remove Window: ", window)
     manager.remove(window)
 
     # i don't want to have to call this
@@ -287,7 +286,7 @@ class ChannelWindow(Window):
 
     def __init__(self, network, id, core):
         Window.__init__(self, network, id, core)
-        print "** DEBUG :: NEW Channel Window: ", network, ", ", id, ", ", core
+        print("** DEBUG :: NEW Channel Window: ", network, ", ", id, ", ", core)
 
         self.nicklist = widgets.Nicklist(self, core)
         self.nick_label = widgets.NickEditor(self, core)

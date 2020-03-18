@@ -1,9 +1,10 @@
 import os
 import sys
 import traceback
-import events
-import windows
-import irc
+from . import events
+from . import windows
+from . import irc
+from . import widgets
 
 urkpath = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,7 +17,7 @@ sys.path = [
 
 script_path = urkpath + "/scripts"
 
-from ui import *
+from .ui import *
 
 
 # Here I'm trying to handle the original URL IRC Client, urk don't use
@@ -30,6 +31,7 @@ class Trigger(object):
 
     def _load_scripts(self):
         script_path = urkpath + "/scripts"
+        print(f"script path: {script_path}")
         try:
             suffix = os.extsep + "py"
             for script in os.listdir(script_path):
@@ -39,7 +41,7 @@ class Trigger(object):
                         self._mods.append(mod)
                     except:
                         traceback.print_exc()
-                        print "Failed loading script %s." % script
+                        print("Failed loading script %s." % script)
         except OSError:
             pass
 
@@ -109,11 +111,11 @@ class Client(object):
         self.widget.show_all()
 
     def add_channel(self, channel):
-        print "** DEBUG :: Add default channel: ", channel
+        print("** DEBUG :: Add default channel: ", channel)
         self.core.channels.append(channel)
 
     def add_channel_other(self, channelother):
-        print "** DEBUG :: Add default channel other: ", channelother
+        print("** DEBUG :: Add default channel other: ", channelother)
         self.core.channels.append(channelother)
 
     def clear_channels(self):
