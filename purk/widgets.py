@@ -407,8 +407,6 @@ def get_iter_at_coords(view, x, y):
                         *view.window_to_buffer_coords(
                             Gtk.TextWindowType.TEXT, int(x), int(y)))
     if Gtk.check_version(3, 19, 8) is None:
-        if not mouseClickPos[0]:
-            return False
         mouseClickPos = mouseClickPos[1]
 
     return mouseClickPos
@@ -475,9 +473,6 @@ class TextOutput(Gtk.TextView):
         iter = self.get_iter_at_location(0, y)
 
         if Gtk.check_version(3, 19, 8) is None:
-            if not iter[0]:
-                return
-
             iter = iter[1]
 
         if self.get_iter_location(iter).y < y:
