@@ -2,6 +2,9 @@ import socket
 import dbus
 import os
 
+import gi
+gi.require_version('Gst', '1.0')
+
 from conf import conf
 import ui
 import windows
@@ -11,11 +14,8 @@ from gi.repository import Gtk
 from sugar3.activity.activity import get_bundle_path
 from gettext import gettext as _
 
-try:
-    from gi.repository import Gst
-    _HAS_SOUND = True
-except:
-    _HAS_SOUND = False
+from gi.repository import Gst
+_HAS_SOUND = True
 
 
 DISCONNECTED = 0
