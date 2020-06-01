@@ -1,3 +1,14 @@
+13
+* Port Gtk.TextView.get_iter_at_location() to Gtk 3.19.9 (Rahul Bothra)
+* Update metadata in activity.info (Vipul Gupta)
+* Update COPYING files (Vipul Gupta)
+* Update .gitignore (Vipul Gupta)
+* Add screenshots (Vipul Gupta)
+* Port GObject to GLib (Aryan Sharma)
+* Fix regression introduced by 99df7a3 (Ibiam Chihurumnaya)
+* Fix PyGIWarnings (Ibiam Chihurumnaya)
+* Regenerate POT file (Ibiam Chihurumnaya)
+
 12
 * Fixed problems with popup menus by ignacio
 * pep8 for code by ignacio

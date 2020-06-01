@@ -1,7 +1,7 @@
 [Activity]
 name = IRC
 license = GPLv2+;LGPLv2+
-activity_version = 12
+activity_version = 13
 bundle_id = org.sugarlabs.IRC
 icon = activity-ircchat
 exec = sugar-activity ircactivity.IRCActivity 
