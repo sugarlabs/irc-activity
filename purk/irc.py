@@ -154,7 +154,7 @@ class Network(object):
         self.requested_joins = set()
         self.requested_parts = set()
 
-        self.buffer = ''
+        self.buffer = b''
 
     # called when we get a result from the dns lookup
     def on_dns(self, result, error):
