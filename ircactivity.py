@@ -141,6 +141,18 @@ class IRCActivity(activity.Activity):
             self._theme_toggler.set_icon_name('light-theme')
             self._theme_toggler.set_tooltip('Switch to Light Theme')
 
+        # for window in self.client.get_widget():
+        for i in range(self.client.get_widget().tabs.get_n_pages()):
+            window = self.client.get_widget().tabs.get_nth_page(i)
+            fg_color = Gdk.RGBA()
+            fg_color.parse(self._theme_colors[self._theme_state]['fg_color'])
+            bg_color = Gdk.RGBA()
+            bg_color.parse(self._theme_colors[self._theme_state]['bg_color'])
+            # window.modify_fg(Gtk.StateFlags.NORMAL, fg_color.to_color())
+            # window.modify_bg(Gtk.StateFlags.NORMAL, bg_color.to_color())
+            window.override_background_color(Gtk.StateFlags.NORMAL, bg_color)
+            window.override_color(Gtk.StateFlags.NORMAL, fg_color)
+
     def _get_data(self):
         data = {}
         data['nick'] = self.client.core.window.network.me
