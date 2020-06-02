@@ -28,6 +28,11 @@ from gi.repository import Gdk
 import json
 import configparser
 import os
+import sys
+
+# Add the current path to PATH
+# so that the future modules called can access purk
+sys.path.append(os.path.dirname(__file__))
 
 from sugar3.activity import activity
 from sugar3.activity.activity import get_bundle_path
