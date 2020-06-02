@@ -310,3 +310,9 @@ class IRCActivity(activity.Activity):
         font_desc.set_size(font_desc.get_size() + Pango.SCALE * step)
         window.override_font(font_desc)
         return font_desc.get_size()
+
+    def __zoom_out_cb(self, button):
+        self._zoom(-1)
+
+    def __zoom_in_cb(self, button):
+        self._zoom(1)
