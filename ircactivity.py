@@ -71,7 +71,9 @@ class IRCActivity(activity.Activity):
 
         # CANVAS
         self.set_canvas(widget)
+        self.build_toolbar()
 
+    def build_toolbar(self):
         toolbar_box = ToolbarBox()
         self.activity_button = ActivityButton(self)
         toolbar_box.toolbar.insert(self.activity_button, 0)
