@@ -1,4 +1,4 @@
-import windows
+from purk import windows
 
 
 def _justprefix(network, channel, nick):
