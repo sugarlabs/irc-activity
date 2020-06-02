@@ -429,7 +429,7 @@ class Network(object):
 
 class DummyNetwork(Network):
 
-    def __nonzero__(self):
+    def __bool__(self):
         return False
 
     def __init__(self, core):
@@ -469,7 +469,7 @@ def match_glob(text, glob, t=0, g=0):
             if star_p:
                 if g == len(glob):
                     return True
-                for i in xrange(t, len(text)):
+                for i in range(t, len(text)):
                     if text[i] == glob[g] and match_glob(
                             text,
                             glob,

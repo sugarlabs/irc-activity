@@ -459,7 +459,7 @@ if __name__ == "__main__":
     #"""
 
     def setify_tags(tags):
-        return set(frozenset(tag.iteritems())
+        return set(frozenset(iter(tag.items()))
                    for tag in tags if tag['from'] != tag['to'])
 
     def parsed_eq(xxx_todo_changeme, xxx_todo_changeme1):
@@ -479,17 +479,17 @@ if __name__ == "__main__":
 
     for i, (test, result) in enumerate(zip(tests, results)):
         if not parsed_eq(parse_mirc(test), result):
-            print "parse_mirc failed test %s:" % i
-            print repr(test)
-            print parse_mirc(test)
-            print result
-            print
+            print("parse_mirc failed test %s:" % i)
+            print(repr(test))
+            print(parse_mirc(test))
+            print(result)
+            print()
 
         elif not parsed_eq(parse_mirc(unparse_mirc(parsed_to_unparsed(result))), result):
-            print "unparse_mirc failed test %s:" % i
-            print repr(test)
-            print unparse_mirc(test)
-            print
+            print("unparse_mirc failed test %s:" % i)
+            print(repr(test))
+            print(unparse_mirc(test))
+            print()
 
 #import dis
 # dis.dis(parse_mirc)

@@ -39,7 +39,7 @@ class Trigger(object):
                         self._mods.append(mod)
                     except:
                         traceback.print_exc()
-                        print "Failed loading script %s." % script
+                        print("Failed loading script %s." % script)
         except OSError:
             pass
 
@@ -109,11 +109,11 @@ class Client(object):
         self.widget.show_all()
 
     def add_channel(self, channel):
-        print "** DEBUG :: Add default channel: ", channel
+        print("** DEBUG :: Add default channel: ", channel)
         self.core.channels.append(channel)
 
     def add_channel_other(self, channelother):
-        print "** DEBUG :: Add default channel other: ", channelother
+        print("** DEBUG :: Add default channel other: ", channelother)
         self.core.channels.append(channelother)
 
     def clear_channels(self):

@@ -1,6 +1,6 @@
 import sys
 import os
-import thread
+import _thread
 
 from gi.repository import GLib
 
@@ -87,7 +87,7 @@ def fork(cb, f, *args, **kwargs):
 
             GLib.idle_add(callback)
 
-    thread.start_new_thread(thread_func, ())
+    _thread.start_new_thread(thread_func, ())
     return is_stopped
 
 set_style = widgets.set_style

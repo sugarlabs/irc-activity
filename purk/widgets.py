@@ -495,7 +495,7 @@ class TextOutput(Gtk.TextView):
 
     # the unknowing print weird things to our text widget function
     def write(self, text, line_ending='\n', fg=None):
-        if not isinstance(text, unicode):
+        if not isinstance(text, str):
             try:
                 text = codecs.utf_8_decode(text)[0]
             except:
@@ -509,7 +509,7 @@ class TextOutput(Gtk.TextView):
                         "foreground",
                         isinstance(
                             fg,
-                            basestring) and (
+                            str) and (
                             '#%s' %
                             fg) or parse_mirc.get_mirc_color(fg)),
                     'from': 0,
@@ -864,7 +864,7 @@ class UrkUITabs(Gtk.VBox):
         self.tabs.set_current_page(self.tabs.page_num(window))
 
     def add(self, window):
-        for pos in reversed(range(self.tabs.get_n_pages())):
+        for pos in reversed(list(range(self.tabs.get_n_pages()))):
             if self.tabs.get_nth_page(pos).network == window.network:
                 break
         else:

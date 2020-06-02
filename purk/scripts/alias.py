@@ -23,7 +23,7 @@ class CommandHandler:
         loc = sys.modules.copy()
         loc.update(e.__dict__)
         result = eval(self.command, loc)
-        if isinstance(result, basestring):
+        if isinstance(result, str):
             core.events.run(result, e.window, e.network)
 
 for name in aliases:
