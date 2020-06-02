@@ -76,8 +76,7 @@ class Core(object):
             offset = 1
 
         self.events.run(
-            command[
-                offset:],
+            command[offset:],
             self.manager.get_active(),
             self.window.network)
 
