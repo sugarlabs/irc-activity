@@ -8,8 +8,8 @@ from gi.repository import Pango
 
 from sugar3 import profile
 
-from conf import conf
-import parse_mirc
+from purk.conf import conf
+from purk import parse_mirc
 
 # Window activity Constants
 HILIT = 'h'
