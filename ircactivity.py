@@ -143,6 +143,16 @@ class IRCActivity(activity.Activity):
         self.set_toolbar_box(toolbar_box)
         toolbar_box.show()
 
+
+    def _toggled_theme(self, button):
+        # previous_theme = self._theme_colors[self._theme_state]
+        if self._theme_state == "dark":
+            self._theme_state = "light"
+        elif self._theme_state == "light":
+            self._theme_state = "dark"
+        else:
+            self._theme_state = "light"
+        self.update_theme()
     def _get_data(self):
         data = {}
         data['nick'] = self.client.core.window.network.me
