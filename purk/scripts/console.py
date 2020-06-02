@@ -1,7 +1,7 @@
 import sys
 import traceback
-import windows
-from conf import conf
+from purk import windows
+from purk.conf import conf
 
 
 class ConsoleWriter:
