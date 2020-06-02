@@ -32,6 +32,7 @@ import os
 from sugar3.activity import activity
 from sugar3.activity.activity import get_bundle_path
 from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.toggletoolbutton import ToggleToolButton
 from sugar3.activity.widgets import StopButton, TitleEntry, ActivityButton
 
@@ -48,6 +49,17 @@ class IRCActivity(activity.Activity):
 
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
+        self._theme_colors = {
+            "light": {
+                'fg_color': '#000000',
+                'bg_color': '#FFFFFF'
+                },
+            "dark": {
+                'fg_color': '#FFFFFF',
+                'bg_color': '#000000'
+                },
+        }
+        self._theme_state = "light"
 
         logging.debug('Starting the IRC Activity')
         self.set_title(_('IRC Activity'))
@@ -83,6 +95,17 @@ class IRCActivity(activity.Activity):
         toolbar_box.toolbar.insert(connectionbtn, -1)
         connectionbtn.show()
 
+        sep = Gtk.SeparatorToolItem()
+        toolbar_box.toolbar.insert(sep, -1)
+        sep.show()
+
+        # a light and dark theme button
+        self._theme_toggler = ToolButton('dark-theme')
+        self._theme_toggler.set_tooltip('Switch to Dark Theme')
+        self._theme_toggler.props.accelerator = '<Ctrl><Shift>I'
+        self._theme_toggler.connect('clicked', self._toggled_theme)
+        toolbar_box.toolbar.insert(self._theme_toggler, -1)
+        self._theme_toggler.show()
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -95,6 +118,28 @@ class IRCActivity(activity.Activity):
 
         self.set_toolbar_box(toolbar_box)
         toolbar_box.show()
+
+
+    def _toggled_theme(self, button):
+        # previous_theme = self._theme_colors[self._theme_state]
+        if self._theme_state == "dark":
+            self._theme_state = "light"
+        elif self._theme_state == "light":
+            self._theme_state = "dark"
+        else:
+            self._theme_state = "light"
+        self.update_theme()
+
+    def update_theme(self):
+        if self._theme_state == "light":
+            self._theme_toggler.set_icon_name('dark-theme')
+            self._theme_toggler.set_tooltip('Switch to Dark Theme')
+        elif self._theme_state == "dark":
+            self._theme_toggler.set_icon_name('light-theme')
+            self._theme_toggler.set_tooltip('Switch to Light Theme')
+        else:
+            self._theme_toggler.set_icon_name('light-theme')
+            self._theme_toggler.set_tooltip('Switch to Light Theme')
 
     def _get_data(self):
         data = {}
