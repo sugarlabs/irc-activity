@@ -9,8 +9,8 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 sys.path = __sys_path
 
-import widgets
-import windows
+from purk import widgets
+from purk import windows
 
 # Running from same package dir
 urkpath = os.path.dirname(__file__)
