@@ -289,3 +289,17 @@ class IRCActivity(activity.Activity):
         text = json.dumps(data)
         fd.write(text)
         fd.close()
+
+    def _absolute_zoom(self, scale, window):
+        if not scale:
+            return
+        font_desc = window.get_pango_context().get_font_description()
+        font_desc.set_size(scale)
+        window.override_font(font_desc)
+
+    def _zoom(self, step):
+        window = self.client.get_widget().get_active()
+        font_desc = window.get_pango_context().get_font_description()
+        font_desc.set_size(font_desc.get_size() + Pango.SCALE * step)
+        window.override_font(font_desc)
+        return font_desc.get_size()
