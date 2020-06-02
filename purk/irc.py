@@ -159,7 +159,7 @@ class Network(object):
     # called when we get a result from the dns lookup
     def on_dns(self, result, error):
         if error:
-            self.disconnect(error=error[1])
+            self.disconnect(error=error)
         else:
             if socket.has_ipv6:  # prefer ipv6
                 result = [
@@ -223,7 +223,7 @@ class Network(object):
     # called when socket.open() returns
     def on_connect(self, result, error):
         if error:
-            self.disconnect(error=error[1])
+            self.disconnect(error=error)
             # we should immediately retry if we failed to open the socket and
             # there are hosts left
             if self.status == DISCONNECTED and not self.failedlasthost:
@@ -251,7 +251,7 @@ class Network(object):
 
     def on_read(self, result, error):
         if error:
-            self.disconnect(error=error[1])
+            self.disconnect(error=error)
         elif not result:
             self.disconnect(error="Connection closed by remote host")
         else:
