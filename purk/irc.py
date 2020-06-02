@@ -38,7 +38,7 @@ if _HAS_SOUND:
 
 
 def parse_irc(msg, server):
-    msg = msg.split(' ')
+    msg = msg.decode().split(' ')
 
     # if our very first character is :
     # then this is the source,
