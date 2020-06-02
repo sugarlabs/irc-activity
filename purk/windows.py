@@ -1,9 +1,9 @@
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-import irc
-from conf import conf
-import widgets
+from purk import irc
+from purk.conf import conf
+from purk import widgets
 
 
 def append(window, manager):
