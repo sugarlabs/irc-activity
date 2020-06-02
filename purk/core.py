@@ -1,9 +1,9 @@
 import os
 import sys
 import traceback
-import events
-import windows
-import irc
+from . import events
+from . import windows
+from . import irc
 
 urkpath = os.path.abspath(os.path.dirname(__file__))
 
