@@ -59,6 +59,8 @@ class IRCActivity(activity.Activity):
                 'fg_color': '#FFFFFF',
                 'bg_color': '#000000'}}
         self._theme_state = "light"
+        self.tab_themes = {}
+        self.no_of_tabs = 0
 
         logging.debug('Starting the IRC Activity')
         self.set_title(_('IRC Activity'))
@@ -207,9 +209,8 @@ class IRCActivity(activity.Activity):
             self._theme_toggler.set_icon_name('light-theme')
             self._theme_toggler.set_tooltip('Switch to Light Theme')
 
-        # for window in self.client.get_widget():
-        for i in range(self.client.get_widget().tabs.get_n_pages()):
-            window = self.client.get_widget().tabs.get_nth_page(i)
+        for tab in range(self.client.get_widget().tabs.get_n_pages()):
+            window = self.client.get_widget().tabs.get_nth_page(tab)
             fg_color = Gdk.RGBA()
             fg_color.parse(self._theme_colors[self._theme_state]['fg_color'])
             bg_color = Gdk.RGBA()
@@ -227,6 +228,15 @@ class IRCActivity(activity.Activity):
         data['current-window'] = self.client.core.manager.get_active().id
         data['channels'] = []
         data['scrollback'] = {}
+
+        for tab in range(self.client.get_widget().tabs.get_n_pages()):
+            window = self.client.get_widget().tabs.get_nth_page(tab)
+            font_desc = window.get_pango_context().get_font_description()
+            data['font-size-{}'.format(self.no_of_tabs)] = font_desc.get_size()
+            self.no_of_tabs += 1
+
+        data['theme'] = self._theme_state
+        data['num-of-tabs'] = self.no_of_tabs
 
         for i in range(self.client.core.manager.tabs.get_n_pages()):
             win = self.client.core.manager.tabs.get_nth_page(i)
@@ -343,6 +353,18 @@ class IRCActivity(activity.Activity):
             win.output.get_buffer().set_text(data['scrollback'][winid])
             if winid == data['current-window']:
                 self.client.core.window.network.requested_joins = set([winid])
+
+        num_of_tabs = data.get('num-of-tabs')
+        for num in range(num_of_tabs):
+            if 'font-size-{}'.format(num) in data.keys():
+                window = self.client.get_widget().tabs.get_nth_page(num)
+                font_size = data.get('font-size-{}'.format(num))
+                pdesc = Pango.FontDescription.new()
+                pdesc.set_size(font_size)
+                window.override_font(pdesc)
+        self._theme_state = data.get('theme')
+
+        self.update_theme()
 
     def write_file(self, file_path):
         if not self.metadata['mime_type']:
