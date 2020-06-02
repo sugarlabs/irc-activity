@@ -77,6 +77,9 @@ def get_default(network, manager):
 class Window(Gtk.VBox):
     need_vbox_init = True
 
+    def override_background_color(self, state, color):
+        self.output.modify_bg(state, color.to_color())
+
     def transfer_text(self, _widget, event):
         if event.string and not self.input.is_focus():
             self.input.grab_focus()
