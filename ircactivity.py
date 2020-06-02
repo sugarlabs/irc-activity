@@ -113,6 +113,23 @@ class IRCActivity(activity.Activity):
         self._theme_toggler.connect('clicked', self._toggled_theme)
         toolbar_box.toolbar.insert(self._theme_toggler, -1)
         self._theme_toggler.show()
+
+        # Button for zoom out
+        zoom_out_button = ToolButton('zoom-out')
+        zoom_out_button.set_tooltip(_('Zoom out'))
+        zoom_out_button.props.accelerator = '<Ctrl>minus'
+        zoom_out_button.connect('clicked', self.__zoom_out_cb)
+        toolbar_box.toolbar.insert(zoom_out_button, -1)
+        zoom_out_button.show()
+
+        # Button for zoom in
+        zoom_in_button = ToolButton('zoom-in')
+        zoom_in_button.set_tooltip(_('Zoom in'))
+        zoom_in_button.props.accelerator = '<Ctrl>plus'
+        zoom_in_button.connect('clicked', self.__zoom_in_cb)
+        toolbar_box.toolbar.insert(zoom_in_button, -1)
+        zoom_in_button.show()
+
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
