@@ -153,6 +153,18 @@ class IRCActivity(activity.Activity):
         else:
             self._theme_state = "light"
         self.update_theme()
+
+    def update_theme(self):
+        if self._theme_state == "light":
+            self._theme_toggler.set_icon_name('dark-theme')
+            self._theme_toggler.set_tooltip('Switch to Dark Theme')
+        elif self._theme_state == "dark":
+            self._theme_toggler.set_icon_name('light-theme')
+            self._theme_toggler.set_tooltip('Switch to Light Theme')
+        else:
+            self._theme_toggler.set_icon_name('light-theme')
+            self._theme_toggler.set_tooltip('Switch to Light Theme')
+
     def _get_data(self):
         data = {}
         data['nick'] = self.client.core.window.network.me
