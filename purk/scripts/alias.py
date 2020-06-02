@@ -1,7 +1,7 @@
 import sys
 import os
 
-from conf import conf
+from purk.conf import conf
 
 aliases = conf.get("aliases", {
     'op': '"mode "+window.id+" +"+"o"*len(args)+" "+" ".join(args)',

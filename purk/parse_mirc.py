@@ -1,5 +1,5 @@
 try:
-    from conf import conf
+    from .conf import conf
 except ImportError:
     conf = {}
 
