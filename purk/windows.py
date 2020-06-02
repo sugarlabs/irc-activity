@@ -76,6 +76,22 @@ def get_default(network, manager):
 class Window(Gtk.VBox):
     need_vbox_init = True
 
+    def override_background_color(self, state, color):
+        """
+        Override the background_color function; 
+        change the bg_color by invoking modify_bg of self.output
+        as Gtk.VBox does not have any background color
+        """
+        self.output.modify_bg(state, color.to_color())
+
+    def override_color(self, state, color):
+        """
+        Override the color function; 
+        change the fg_color by invoking modify_fg of self.output
+        as Gtk.VBox does not have any foreground color
+        """
+        self.output.modify_fg(state, color.to_color())
+
     def transfer_text(self, _widget, event):
         if event.string and not self.input.is_focus():
             self.input.grab_focus()
