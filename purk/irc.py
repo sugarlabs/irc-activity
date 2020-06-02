@@ -5,10 +5,10 @@ import os
 import gi
 gi.require_version('Gst', '1.0')
 
-from conf import conf
-import ui
-import windows
-import info
+from purk.conf import conf
+from purk import ui
+from purk import windows
+from purk import info
 
 from gi.repository import Gtk
 from sugar3.activity.activity import get_bundle_path
