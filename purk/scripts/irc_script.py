@@ -1,9 +1,9 @@
 import time
 
-from conf import conf
-import ui
-import windows
-import irc
+from purk.conf import conf
+from purk import ui
+from purk import windows
+from purk import irc
 
 COMMAND_PREFIX = conf.get('command_prefix', '/')
 

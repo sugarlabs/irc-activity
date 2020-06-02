@@ -1,7 +1,7 @@
-import ui
-import windows
-import chaninfo
-from conf import conf
+from purk import ui
+from purk import windows
+from purk.scripts import chaninfo
+from purk.conf import conf
 
 
 def set_target(e):

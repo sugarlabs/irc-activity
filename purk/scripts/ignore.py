@@ -1,5 +1,5 @@
-from conf import conf
-import irc
+from purk.conf import conf
+from purk import irc
 
 
 def preRaw(e):

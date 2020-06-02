@@ -1,6 +1,7 @@
 import sys
 import os
 import traceback
+import importlib
 
 pyending = os.extsep + 'py'
 

@@ -16,7 +16,7 @@ sys.path = [
 
 script_path = urkpath + "/scripts"
 
-from ui import *
+from .ui import *
 
 
 # Here I'm trying to handle the original URL IRC Client, urk don't use

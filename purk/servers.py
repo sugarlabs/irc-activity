@@ -1,5 +1,5 @@
 
-from conf import conf
+from .conf import conf
 
 if 'networks' not in conf:
     conf['networks'] = {}
