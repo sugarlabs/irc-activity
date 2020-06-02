@@ -709,6 +709,9 @@ class WindowLabel(Gtk.EventBox):
             title = title.replace(*escapes)
 
         self.label.set_markup("<b>%s</b>" % title)
+        self.label.set_yalign(0.5)
+        self.label.set_xalign(0.5)
+        self.label.set_width_chars(len(title) + 5)
 
     def tab_popup(self, widget, event):
         # right click
