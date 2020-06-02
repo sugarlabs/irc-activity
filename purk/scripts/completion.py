@@ -1,6 +1,6 @@
-import windows
-import chaninfo
-from conf import conf
+from purk import windows
+from purk.scripts import chaninfo
+from purk.conf import conf
 
 
 def channel_completer(window, left, right, text):
