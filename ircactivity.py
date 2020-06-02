@@ -53,6 +53,17 @@ class IRCActivity(activity.Activity):
 
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
+        self._theme_colors = {
+            "light": {
+                'fg_color': '#000000',
+                'bg_color': '#FFFFFF'
+                },
+            "dark": {
+                'fg_color': '#FFFFFF',
+                'bg_color': '#000000'
+                },
+        }
+        self._theme_state = "light"
 
         logging.debug('Starting the IRC Activity')
         self.set_title(_('IRC Activity'))
