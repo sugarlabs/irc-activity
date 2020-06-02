@@ -257,7 +257,7 @@ class Network(object):
         else:
             self.source = source = ui.Source()
 
-            self.buffer = (self.buffer + result).split("\r\n")
+            self.buffer = (self.buffer+ result).split(b"\r\n")
 
             for line in self.buffer[:-1]:
                 self.got_msg(line)
@@ -265,7 +265,7 @@ class Network(object):
             if self.buffer:
                 self.buffer = self.buffer[-1]
             else:
-                self.buffer = ''
+                self.buffer = b''
 
             if source.enabled:
                 self.source = ui.fork(self.on_read, self.socket.recv, 8192)
@@ -274,7 +274,7 @@ class Network(object):
         self.events.trigger("OwnRaw", network=self, raw=msg)
 
         if self.status >= INITIALIZING:
-            self.socket.send(msg + "\r\n")
+            self.socket.send((msg + "\r\n").encode())
 
     def got_msg(self, msg):
         pmsg = parse_irc(msg, self.server)
