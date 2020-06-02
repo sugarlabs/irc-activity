@@ -16,6 +16,10 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301  USA
 
+import json
+import configparser
+import os
+
 import gi
 gi.require_version('Gtk', '3.0')
 
@@ -24,10 +28,7 @@ from gettext import gettext as _
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-
-import json
-import configparser
-import os
+from gi.repository import Pango
 
 from sugar3.activity import activity
 from sugar3.activity.activity import get_bundle_path
@@ -56,9 +57,7 @@ class IRCActivity(activity.Activity):
                 },
             "dark": {
                 'fg_color': '#FFFFFF',
-                'bg_color': '#000000'
-                },
-        }
+                'bg_color': '#000000'}}
         self._theme_state = "light"
 
         logging.debug('Starting the IRC Activity')
@@ -71,6 +70,10 @@ class IRCActivity(activity.Activity):
         self.is_visible = False
 
         self.client = purk.Client(self)
+        window = self.client.get_widget().get_active()
+        font_desc = window.get_pango_context().get_font_description()
+        self.original_zlevel= font_desc.get_size()
+
         if handle.object_id is None:
             self.default_config()
         self.client.show()
@@ -106,6 +109,27 @@ class IRCActivity(activity.Activity):
         self._theme_toggler.connect('clicked', self._toggled_theme)
         toolbar_box.toolbar.insert(self._theme_toggler, -1)
         self._theme_toggler.show()
+
+        # Button for zoom out
+        self.zoom_out = ToolButton('zoom-out', accelerator='<ctrl>minus')
+        self.zoom_out.set_tooltip(_('Zoom out'))
+        self.zoom_out.connect('clicked', self.__zoom_out_cb)
+        toolbar_box.toolbar.insert(self.zoom_out, -1)
+        self.zoom_out.show()
+
+        # Button for zoom in
+        self.zoom_in = ToolButton('zoom-in', accelerator='<ctrl>plus')
+        self.zoom_in.set_tooltip(_('Zoom in'))
+        self.zoom_in.connect('clicked', self.__zoom_in_cb)
+        toolbar_box.toolbar.insert(self.zoom_in, -1)
+        self.zoom_in.show()
+
+        self.zoom_original = ToolButton('zoom-original', accelerator='<ctrl>0')
+        self.zoom_original.set_tooltip(_('Actual size'))
+        self.zoom_original.connect('clicked', self.__zoom_original_cb)
+        toolbar_box.toolbar.insert(self.zoom_original, -1)
+        self.zoom_original.show()
+
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
@@ -119,6 +143,48 @@ class IRCActivity(activity.Activity):
         self.set_toolbar_box(toolbar_box)
         toolbar_box.show()
 
+        self._zoom_update_sensitive(self.original_zlevel)
+
+    def can_zoom_in(self, cfont_size):
+        limit = self.original_zlevel + Pango.SCALE * 4
+        return cfont_size < limit
+
+    def can_zoom_out(self, cfont_size):
+        limit = self.original_zlevel - Pango.SCALE * 4
+        return cfont_size > limit
+
+    def can_zoom_original(self, cfont_size):
+        upper = self.original_zlevel + .5
+        lower = self.original_zlevel - .5
+        return cfont_size > upper or cfont_size < lower
+
+    def _zoom_update_sensitive(self, cfont_size):
+        self.zoom_in.set_sensitive(self.can_zoom_in(cfont_size))
+        self.zoom_out.set_sensitive(self.can_zoom_out(cfont_size))
+        self.zoom_original.set_sensitive(self.can_zoom_original(cfont_size))
+
+    def __zoom_out_cb(self, button):
+        window = self.client.get_widget().get_active()
+        font_desc = window.get_pango_context().get_font_description()
+        font_desc.set_size(font_desc.get_size() - Pango.SCALE)
+        if button.is_sensitive():
+            window.override_font(font_desc)
+        self._zoom_update_sensitive(font_desc.get_size())
+
+    def __zoom_in_cb(self, button):
+        window = self.client.get_widget().get_active()
+        font_desc = window.get_pango_context().get_font_description()
+        font_desc.set_size(font_desc.get_size() + Pango.SCALE)
+        if button.is_sensitive():
+            window.override_font(font_desc)
+        self._zoom_update_sensitive(font_desc.get_size())
+
+    def __zoom_original_cb(self, button):
+        window = self.client.get_widget().get_active()
+        font_desc = window.get_pango_context().get_font_description()
+        font_desc.set_size(self.original_zlevel)
+        window.override_font(font_desc)
+        self._zoom_update_sensitive(font_desc.get_size())
 
     def _toggled_theme(self, button):
         # previous_theme = self._theme_colors[self._theme_state]
@@ -148,8 +214,6 @@ class IRCActivity(activity.Activity):
             fg_color.parse(self._theme_colors[self._theme_state]['fg_color'])
             bg_color = Gdk.RGBA()
             bg_color.parse(self._theme_colors[self._theme_state]['bg_color'])
-            # window.modify_fg(Gtk.StateFlags.NORMAL, fg_color.to_color())
-            # window.modify_bg(Gtk.StateFlags.NORMAL, bg_color.to_color())
             window.override_background_color(Gtk.StateFlags.NORMAL, bg_color)
             window.override_color(Gtk.StateFlags.NORMAL, fg_color)
 
@@ -289,3 +353,4 @@ class IRCActivity(activity.Activity):
         text = json.dumps(data)
         fd.write(text)
         fd.close()
+
