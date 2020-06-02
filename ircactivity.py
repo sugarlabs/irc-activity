@@ -187,6 +187,8 @@ class IRCActivity(activity.Activity):
         data['current-window'] = self.client.core.manager.get_active().id
         data['channels'] = []
         data['scrollback'] = {}
+        data['theme'] = self._theme_state
+        data['font-size'] = self._zoom(0)
 
         for i in range(self.client.core.manager.tabs.get_n_pages()):
             win = self.client.core.manager.tabs.get_nth_page(i)
