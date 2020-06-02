@@ -1,10 +1,12 @@
 import socket
 import dbus
 import os
+import sys
 
 import gi
 gi.require_version('Gst', '1.0')
 
+sys.path.append(os.path.dirname(__file__))
 from purk.conf import conf
 from purk import ui
 from purk import windows
