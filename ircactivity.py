@@ -306,6 +306,13 @@ class IRCActivity(activity.Activity):
             if winid == data['current-window']:
                 self.client.core.window.network.requested_joins = set([winid])
 
+        self._absolute_zoom_iter(data.get('font-size'))
+        # sets the theme to light, if no configuration is found
+        # in older IRC activity, this is useful, as those json configuration
+        # files do not have theme key
+        self._theme_state = data.get('theme', 'light')
+        self.update_theme()  # update ui because theme has changed
+
     def write_file(self, file_path):
         if not self.metadata['mime_type']:
             self.metadata['mime_type'] = 'text/plain'
