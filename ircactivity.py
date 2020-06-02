@@ -37,6 +37,7 @@ sys.path.append(os.path.dirname(__file__))
 from sugar3.activity import activity
 from sugar3.activity.activity import get_bundle_path
 from sugar3.graphics.toolbarbox import ToolbarBox
+from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.toggletoolbutton import ToggleToolButton
 from sugar3.activity.widgets import StopButton, TitleEntry, ActivityButton
 
@@ -101,6 +102,17 @@ class IRCActivity(activity.Activity):
         toolbar_box.toolbar.insert(connectionbtn, -1)
         connectionbtn.show()
 
+        sep = Gtk.SeparatorToolItem()
+        toolbar_box.toolbar.insert(sep, -1)
+        sep.show()
+
+        # a light and dark theme button
+        self._theme_toggler = ToolButton('dark-theme')
+        self._theme_toggler.set_tooltip('Switch to Dark Theme')
+        self._theme_toggler.props.accelerator = '<Ctrl><Shift>I'
+        self._theme_toggler.connect('clicked', self._toggled_theme)
+        toolbar_box.toolbar.insert(self._theme_toggler, -1)
+        self._theme_toggler.show()
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False
         separator.set_expand(True)
