@@ -290,6 +290,13 @@ class IRCActivity(activity.Activity):
         fd.write(text)
         fd.close()
 
+    def _absolute_zoom_iter(self, scale):
+        if not scale:
+            return
+        for i in range(self.client.get_widget().tabs.get_n_pages()):
+            window = self.client.get_widget().tabs.get_nth_page(i)
+            self._absolute_zoom(scale, window)
+
     def _absolute_zoom(self, scale, window):
         if not scale:
             return
