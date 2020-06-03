@@ -8,8 +8,8 @@ from gi.repository import Pango
 
 from sugar3 import profile
 
-from .conf import conf
-from . import parse_mirc
+from conf import conf
+import parse_mirc
 
 # Window activity Constants
 HILIT = 'h'
@@ -592,7 +592,6 @@ class TextOutput(Gtk.TextView):
             self.clear_hover()
 
         hover_iter = get_iter_at_coords(self, *self.hover_coords)
-        print(f"hover iter: {hover_iter}")
 
         if not hover_iter.ends_line():
             h_data = get_event_at_iter(self, hover_iter, self.core)

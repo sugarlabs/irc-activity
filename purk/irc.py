@@ -156,7 +156,7 @@ class Network(object):
     # called when we get a result from the dns lookup
     def on_dns(self, result, error):
         if error:
-            self.disconnect(error=error[1])
+            self.disconnect(error=error.strerror)
         else:
             if socket.has_ipv6:  # prefer ipv6
                 result = [
@@ -220,7 +220,7 @@ class Network(object):
     # called when socket.open() returns
     def on_connect(self, result, error):
         if error:
-            self.disconnect(error=error[1])
+            self.disconnect(error=error.strerror)
             # we should immediately retry if we failed to open the socket and
             # there are hosts left
             if self.status == DISCONNECTED and not self.failedlasthost:
@@ -245,16 +245,15 @@ class Network(object):
             self.core.run_command("/join %s" % channelother)
 
     # called when we read data or failed to read data
-
     def on_read(self, result, error):
         if error:
-            self.disconnect(error=error[1])
+            self.disconnect(error=strerror)
         elif not result:
             self.disconnect(error="Connection closed by remote host")
         else:
             self.source = source = ui.Source()
 
-            self.buffer = (self.buffer + result).split("\r\n")
+            self.buffer = (self.buffer + result.decode()).split("\r\n")
 
             for line in self.buffer[:-1]:
                 self.got_msg(line)
@@ -271,7 +270,7 @@ class Network(object):
         self.events.trigger("OwnRaw", network=self, raw=msg)
 
         if self.status >= INITIALIZING:
-            self.socket.send(msg + "\r\n")
+            self.socket.send("{}\r\n".format(msg).encode())
 
     def got_msg(self, msg):
         pmsg = parse_irc(msg, self.server)

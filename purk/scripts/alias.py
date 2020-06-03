@@ -66,7 +66,7 @@ def onCommandAlias(e):
                 '/'),
                 name,
                 command))
-        core.events.reload(__name__)
+        core.events.reload(__name__, os.path.abspath(__file__))
     elif len(e.args) == 1:
         name = e.args[0].lower()
         if name in aliases:
