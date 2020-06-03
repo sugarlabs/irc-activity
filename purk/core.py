@@ -1,23 +1,15 @@
 import os
 import sys
 import traceback
-from . import events
-from . import windows
-from . import irc
-from . import widgets
 
 urkpath = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(urkpath)
 
-if os.path.abspath(os.curdir) != os.path.join(urkpath):
-    sys.path[0] = os.path.join(urkpath)
-
-sys.path = [
-    os.path.join(urkpath, "scripts"),
-] + sys.path
-
-script_path = urkpath + "/scripts"
-
-from .ui import *
+from ui import *
+import events
+import windows
+import irc
+import widgets
 
 
 # Here I'm trying to handle the original URL IRC Client, urk don't use
@@ -30,14 +22,14 @@ class Trigger(object):
         self._load_scripts()
 
     def _load_scripts(self):
-        script_path = urkpath + "/scripts"
-        print(f"script path: {script_path}")
+        script_path = os.path.join(urkpath, "scripts")
+        sys.path.append(script_path)
         try:
             suffix = os.extsep + "py"
             for script in os.listdir(script_path):
                 if script.endswith(suffix):
                     try:
-                        mod = self.events.load(script)
+                        mod = self.events.load(script, script_path)
                         self._mods.append(mod)
                     except:
                         traceback.print_exc()

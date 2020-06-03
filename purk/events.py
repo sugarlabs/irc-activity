@@ -1,6 +1,7 @@
 import sys
 import os
 import traceback
+from importlib import util
 
 pyending = os.extsep + 'py'
 
@@ -48,11 +49,10 @@ def trigger(e_name, e_data=None, **kwargs):
                 for f_ref, s_name in all_events[e_name][e_stage]:
                     try:
                         f_ref(e_data)
-                        print("f ref just executed")
                     except EventStopError:
                         return
-                    except CommandError as e:
-                        error = e.args
+                    except CommandError as Error:
+                        error = Error.args
                         continue
                     except:
                         traceback.print_exc()
@@ -82,9 +82,8 @@ def register(e_name, e_stage, f_ref, s_name=""):
 
     all_events[e_name][e_stage] += [(f_ref, s_name)]
 
+
 # turn a filename (or module name) and trim it to the name of the module
-
-
 def get_scriptname(name):
     s_name = os.path.basename(name)
     if s_name.endswith(pyending):
@@ -131,16 +130,33 @@ def register_all(name, obj):
 # load a .py file into a new module object without affecting sys.modules
 
 
-def load_pyfile(filename):
+def load_pyfile(filename, filepath):
     s_name = get_scriptname(filename)
-    return __import__(s_name)
+    spec = util.spec_from_file_location(
+        s_name,
+        os.path.join(filepath, filename))
+
+    module = util.module_from_spec(spec)
+    module.__file__ = filename
+
+    # When a module gets collected, everything in its __dict__ gets set to None
+    # We can't let that happen until all the objects that need it are gone
+    # This should protect the module from being collected without __dict__
+    module.__module__ = module
+
+    f = open(filename)
+    source = f.read()
+    f.close()
+
+    exec(compile(source, filename, "exec"), module.__dict__)
+    return module
 
 # Load a python script and register
 # the functions defined in it for events.
 # Return True if we loaded the script, False if it was already loaded
 
 
-def load(name):
+def load(name, path=None):
     s_name = get_scriptname(name)
     filename = get_filename(name)
 
@@ -150,7 +166,7 @@ def load(name):
     loaded[s_name] = None
 
     try:
-        module = load_pyfile(filename)
+        module = load_pyfile(filename, path)
         loaded[s_name] = module
     except:
         del loaded[s_name]
@@ -188,7 +204,7 @@ def unload(name):
             del all_events[e_name]
 
 
-def reload(name):
+def reload(fname, fpath):
     s_name = get_scriptname(name)
 
     if s_name not in loaded:
@@ -199,7 +215,7 @@ def reload(name):
     unload(s_name)
 
     try:
-        load(name)
+        load(fname, fpath)
         return True
     except:
         loaded[s_name] = temp

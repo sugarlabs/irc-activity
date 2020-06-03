@@ -4,12 +4,10 @@ import _thread
 
 from gi.repository import GLib
 
-__sys_path = list(sys.path)
 from gi.repository import Gtk
 from gi.repository import Gdk
-sys.path = __sys_path
 
-from . import windows
+import windows
 
 # Running from same package dir
 urkpath = os.path.dirname(__file__)
@@ -76,8 +74,8 @@ def fork(cb, f, *args, **kwargs):
     def thread_func():
         try:
             result, error = f(*args, **kwargs), None
-        except Exception as e:
-            result, error = None, e
+        except Exception as Error:
+            result, error = None, Error
 
         if is_stopped.enabled:
             def callback():

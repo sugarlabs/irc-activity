@@ -1,9 +1,9 @@
 from gi.repository import Gtk
 from gi.repository import Gdk
 
-from .conf import conf
-from . import widgets
-from . import irc
+from conf import conf
+import widgets
+import irc
 
 def append(window, manager):
     print("** DEBUG :: Add Window: ", window)
