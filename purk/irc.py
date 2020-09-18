@@ -64,40 +64,34 @@ def parse_irc(msg, server):
 
 
 def default_nicks():
-    try:
-        nicks = [conf.get('nick')] + conf.get('altnicks', [])
-        if not nicks[0]:
+    # We're going to generate a nick based on the user's nick name
+    # and their public key.
+    import sugar3.profile
+    import hashlib
 
-            # We're going to generate a nick based on the user's nick name
-            # and their public key.
-            import sugar3.profile
-            import hashlib
+    user_name = sugar3.profile.get_nick_name()
+    pubkey = sugar3.profile.get_pubkey()
+    m = hashlib.sha256()
+    m.update(pubkey.encode())
+    hexhash = m.hexdigest()
 
-            user_name = sugar3.profile.get_nick_name()
-            pubkey = sugar3.profile.get_pubkey()
-            m = hashlib.sha1()
-            m.update(pubkey)
-            hexhash = m.hexdigest()
+    # Okay.  Get all of the alphabetic bits of the username:
+    user_name_letters = "".join([x for x in user_name if x.isalpha()])
 
-            # Okay.  Get all of the alphabetic bits of the username:
-            user_name_letters = "".join([x for x in user_name if x.isalpha()])
+    # Shorten username letters if it's more than 11 characters
+    # (as we need 5 for - and the hash).
+    if len(user_name_letters) > 11:
+        user_name_letters = user_name_letters[0:11]
 
-            # If that came up with nothing, make it 'XO'.  Also, shorten it
-            # if it's more than 11 characters (as we need 5 for - and the
-            # hash).
-            if len(user_name_letters) == 0:
-                user_name_letters = "XO"
-            if len(user_name_letters) > 11:
-                user_name_letters = user_name_letters[0:11]
+    # Finally, generate a nick by using those letters plus the first
+    # four hash bits of the user's public key.
+    user_nick = user_name_letters + "-" + hexhash[0:4]
 
-            # Finally, generate a nick by using those letters plus the first
-            # four hash bits of the user's public key.
-            user_nick = user_name_letters + "-" + hexhash[0:4]
+    if 'Nick' not in conf:
+         conf['Nick'] = user_nick
 
-            nicks = [user_nick]
-    except:
-        nicks = ["purk"]
-    return nicks
+    return [user_nick]
+
 
 
 class Network(object):
@@ -247,7 +241,7 @@ class Network(object):
     # called when we read data or failed to read data
     def on_read(self, result, error):
         if error:
-            self.disconnect(error=strerror)
+            self.disconnect(error=error.strerror)
         elif not result:
             self.disconnect(error="Connection closed by remote host")
         else:
