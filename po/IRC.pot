@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-02 00:49+0100\n"
+"POT-Creation-Date: 2020-10-07 14:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,18 +27,30 @@ msgid ""
 "Relay Chat (IRC)."
 msgstr ""
 
-#: ircactivity.py:53
+#: ircactivity.py:66
 msgid "IRC Activity"
 msgstr ""
 
-#: ircactivity.py:81 ircactivity.py:125
+#: ircactivity.py:98 ircactivity.py:256
 msgid "Disconnect"
 msgstr ""
 
-#: ircactivity.py:129
+#: ircactivity.py:117
+msgid "Zoom out"
+msgstr ""
+
+#: ircactivity.py:124
+msgid "Zoom in"
+msgstr ""
+
+#: ircactivity.py:130
+msgid "Actual size"
+msgstr ""
+
+#: ircactivity.py:260
 msgid "Connect"
 msgstr ""
 
-#: purk/irc.py:305
+#: purk/irc.py:297
 msgid " on "
 msgstr ""
