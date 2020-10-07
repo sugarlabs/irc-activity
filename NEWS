@@ -1,3 +1,11 @@
+14
+* Port to Python 3 (Ibiam Chihurumnaya)
+* Add padding between IRC tabs (Srevin Saju)
+* Add theme selector icons (Srevin Saju)
+* Add light and dark theme (Srevin Saju)
+* Add zoom-in and zoom-out buttons (Srevin Saju, Ibiam Chihurumnaya)
+* Remove purk as fallback nick (Ibiam Chihurumnaya)
+
 13
 * Port Gtk.TextView.get_iter_at_location() to Gtk 3.19.9 (Rahul Bothra)
 * Update metadata in activity.info (Vipul Gupta)
