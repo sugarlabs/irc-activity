@@ -273,11 +273,11 @@ class IRCActivity(activity.Activity):
         elif os.path.exists(DEFAULT_CONFIG_PATH):
             data = self.read_defaults_from_config(DEFAULT_CONFIG_PATH)
             if not "server" in data:
-                self.client.join_server('irc.freenode.net')
+                self.client.join_server('irc.libera.chat')
             if not "channels" in data:
                 self.i18n_channels()
         else:
-            self.client.join_server('irc.freenode.net')
+            self.client.join_server('irc.libera.chat')
             self.i18n_channels()
 
     def i18n_channels(self):

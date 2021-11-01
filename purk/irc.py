@@ -101,7 +101,7 @@ class Network(object):
             self,
             core,
             activity,
-            server="irc.freenode.net",
+            server="irc.libera.chat",
             port=8001,
             nicks=[],
             username="",
