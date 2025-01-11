@@ -298,14 +298,14 @@ class IRCActivity(activity.Activity):
         fp = open(config_file)
         config = configparser.ConfigParser()
         try:
-            config.readfp(fp)
+            config.read_file(fp)
             fp.close()
         except Exception as error:
             logging.debug('Reading configuration, error: %s' % error)
             fp.close()
             return {"server": None, "channels": None}
 
-        DATA = {"server": None, "chanels": None}
+        DATA = {"server": None, "channels": None}
         if config.has_section('Config'):
             if config.has_option('Config', 'Nick'):
                 nick = config.get('Config', 'Nick').strip()
