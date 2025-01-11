@@ -71,6 +71,10 @@ def default_nicks():
 
     user_name = sugar3.profile.get_nick_name()
     pubkey = sugar3.profile.get_pubkey()
+    
+    if pubkey is None:
+        pubkey = ""
+
     m = hashlib.sha256()
     m.update(pubkey.encode())
     hexhash = m.hexdigest()
